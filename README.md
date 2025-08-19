@@ -30,7 +30,7 @@ This MCP server allows Claude to consult other AI models for different perspecti
 ## ✨ Version 5.0 Features & Improvements
 
 ### 🎭 **NEW: AI Personality System**
-- **5 Distinct Personalities**: `honest`, `gf`, `coach`, `wise`, `creative`
+- **5 Distinct Personalities**: `honest`, `freind`, `coach`, `wise`, `creative`
 - **Intelligent Model Matching**: Each personality uses models best suited for their character
 - **Always Available**: Works with any configured AI provider
 
@@ -75,11 +75,11 @@ Get opinions from DeepSeek's powerful reasoning models:
 - `deepseek-chat` (DeepSeek-V3) - Fast and efficient
 - `deepseek-reasoner` (DeepSeek-R1) - Advanced reasoning
 
-### 🤔 Grok 3 Thinking
-Access xAI's latest thinking models with enhanced reasoning:
-- `grok-3` - Latest flagship model
-- `grok-3-thinking` - Step-by-step reasoning model
-- `grok-3-mini` - Lightweight thinking model with `reasoning_effort` control
+### 🤔 Grok 4 Thinking
+Access xAI's  thinking models with enhanced reasoning:
+- `grok-4` - Latest flagship model
+- `grok-3-thinking` - Step-by-step reasoning model, last gen
+- `grok-3-mini` - Lightweight thinking model with `reasoning_effort` control, last ge 
 
 ### 🎭 Group Discussions (Enhanced)
 Start multi-AI discussions where models can see and respond to each other's input:
