@@ -47,7 +47,7 @@ class AIProviders:
             # Return default fallback configuration
             return {
                 "model_priority": [],
-                "fallback_order": ["openai", "gemini", "grok", "claude", "deepseek", "groq_fast", "perplexity", "huggingface", "ollama"],
+                "fallback_order": ["openai", "gemini", "grok", "claude", "deepseek", "groq_fast", "perplexity", "huggingface", "chutes", "ollama"],
                 "personality_defaults": {}
             }
     
@@ -86,6 +86,7 @@ class AIProviders:
                     "groq_fast": "llama-3.1-70b-versatile",
                     "perplexity": "llama-3.1-sonar-large-128k-online",
                     "huggingface": "meta-llama/Llama-3.3-70B-Instruct",
+                    "chutes": "moonshotai/Kimi-K2-Thinking",
                     "ollama": "llama3.2"
                 }
                 model = default_models.get(platform, "")
@@ -546,6 +547,8 @@ class AIProviders:
                 return await self.get_huggingface_opinion(prompt, model, temperature, max_tokens, reset_conversation, personality)
             elif platform == "openrouter":
                 return await self.get_openrouter_opinion(prompt, model, temperature, max_tokens, "", reset_conversation, personality)
+            elif platform == "chutes":
+                return await self.get_chutes_opinion(prompt, model, temperature, max_tokens, "", reset_conversation, personality)
             elif platform == "ollama":
                 return [TextContent(type="text", text=f"Ollama integration not yet implemented in default selection. Platform: {platform}, Model: {model}")]
             else:
@@ -658,3 +661,47 @@ class AIProviders:
         except Exception as e:
             logger.error(f"OpenRouter API Error: {str(e)}")
             return [TextContent(type="text", text=f"OpenRouter API Error: {str(e)}")]
+    
+    async def get_chutes_opinion(
+        self,
+        prompt: str,
+        model: str = "moonshotai/Kimi-K2-Thinking",
+        temperature: float = 0.7,
+        max_tokens: int = 8000,
+        system_prompt: str = "",
+        reset_conversation: bool = False,
+        personality: str = None
+    ) -> Sequence[TextContent]:
+        """Get opinion from Chutes AI model"""
+        if not self.clients.chutes_client:
+            return [TextContent(type="text", text="Chutes AI client not configured. Please set CHUTES_API_KEY environment variable.")]
+        
+        try:
+            conversation_key = self.conv.get_conversation_key("chutes", model)
+            
+            # Reset conversation if requested
+            if reset_conversation:
+                self.conv.reset_conversation(conversation_key)
+            
+            # Build messages with conversation history
+            messages = self.conv.get_openai_messages(conversation_key, prompt, system_prompt, personality)
+            
+            response = self.clients.chutes_client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens
+            )
+            
+            response_content = response.choices[0].message.content
+            
+            # Add to conversation history
+            self.conv.add_to_conversation_history(conversation_key, "user", prompt)
+            self.conv.add_to_conversation_history(conversation_key, "assistant", response_content)
+            
+            result = f"**Chutes AI {model} Opinion:**\n\n{response_content}"
+            return [TextContent(type="text", text=result)]
+            
+        except Exception as e:
+            logger.error(f"Chutes AI API Error: {str(e)}")
+            return [TextContent(type="text", text=f"Chutes AI API Error: {str(e)}")]

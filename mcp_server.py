@@ -67,6 +67,10 @@ class MCPServer:
             if self.client_manager.perplexity_client:
                 tools.extend(self._get_perplexity_tools())
             
+            # Chutes AI tools
+            if self.client_manager.chutes_client:
+                tools.extend(self._get_chutes_tools())
+            
             # Always add management tools
             tools.extend(self._get_management_tools())
             
@@ -118,6 +122,10 @@ class MCPServer:
                 # Perplexity tools
                 elif name == "get_perplexity_opinion":
                     return await self.ai_providers.get_perplexity_opinion(**arguments)
+                
+                # Chutes AI tools
+                elif name == "get_chutes_opinion":
+                    return await self.ai_providers.get_chutes_opinion(**arguments)
                 
                 # Default model tool
                 elif name == "get_default_opinion":
@@ -575,6 +583,59 @@ class MCPServer:
                             "description": "Perplexity model to use",
                             "enum": ["llama-3.1-sonar-large-128k-online", "llama-3.1-sonar-small-128k-online", "llama-3.1-sonar-large-128k-chat", "llama-3.1-sonar-small-128k-chat"],
                             "default": "llama-3.1-sonar-large-128k-online"
+                        },
+                        "temperature": {
+                            "type": "number",
+                            "description": "Temperature for response randomness (0.0-2.0)",
+                            "minimum": 0.0,
+                            "maximum": 2.0,
+                            "default": 0.7
+                        },
+                        "max_tokens": {
+                            "type": "integer",
+                            "description": "Maximum tokens in response",
+                            "default": 8000
+                        },
+                        "system_prompt": {
+                            "type": "string",
+                            "description": "Optional system prompt to guide the response",
+                            "default": ""
+                        },
+                        "reset_conversation": {
+                            "type": "boolean",
+                            "description": "Reset conversation history for this model",
+                            "default": False
+                        },
+                        "personality": {
+                            "type": "string",
+                            "description": "Personality type for the AI response",
+                            "enum": ["honest", "friend", "coach", "wise", "creative"],
+                            "default": None
+                        }
+                    },
+                    "required": ["prompt"]
+                }
+            )
+        ]
+    
+    def _get_chutes_tools(self) -> List[Tool]:
+        """Get Chutes AI tool definitions"""
+        return [
+            Tool(
+                name="get_chutes_opinion",
+                description="Get a second opinion from a Chutes AI model",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "prompt": {
+                            "type": "string",
+                            "description": "The question or prompt to get an opinion on"
+                        },
+                        "model": {
+                            "type": "string",
+                            "description": "Chutes AI model to use",
+                            "enum": ["moonshotai/Kimi-K2-Thinking", "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8", "MiniMaxAI/MiniMax-M2", "zai-org/GLM-4.6", "deepseek-ai/DeepSeek-R1"],
+                            "default": "moonshotai/Kimi-K2-Thinking"
                         },
                         "temperature": {
                             "type": "number",

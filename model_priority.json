@@ -247,6 +247,36 @@
       "quality_score": 66
     },
     {
+      "platform": "chutes",
+      "model": "moonshotai/Kimi-K2-Thinking",
+      "description": "Chutes AI's Kimi K2 Thinking model - advanced reasoning capabilities",
+      "quality_score": 95
+    },
+    {
+      "platform": "chutes",
+      "model": "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8",
+      "description": "Chutes AI's Qwen 3 Coder 480B model - large scale coding specialist",
+      "quality_score": 94
+    },
+    {
+      "platform": "chutes",
+      "model": "MiniMaxAI/MiniMax-M2",
+      "description": "Chutes AI's MiniMax M2 model - efficient and fast performance",
+      "quality_score": 88
+    },
+    {
+      "platform": "chutes",
+      "model": "zai-org/GLM-4.6",
+      "description": "Chutes AI's GLM 4.6 model - code generation specialist",
+      "quality_score": 90
+    },
+    {
+      "platform": "chutes",
+      "model": "deepseek-ai/DeepSeek-R1",
+      "description": "Chutes AI's DeepSeek R1 model - small and fast inference",
+      "quality_score": 85
+    },
+    {
       "platform": "ollama",
       "model": "llama3.2",
       "description": "Local Meta model - privacy focused",
@@ -255,7 +285,7 @@
   ],
   "fallback_order": [
     "gemini",
-    "openai", 
+    "openai",
     "grok",
     "openrouter",
     "claude",
@@ -263,6 +293,7 @@
     "groq_fast",
     "perplexity",
     "huggingface",
+    "chutes",
     "ollama",
     "ai21",
     "stability",

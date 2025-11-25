@@ -63,6 +63,9 @@ class ClientManager:
         self.perplexity_client = None
         
         # New AI service clients
+        self.chutes_client = None
+        
+        # New AI service clients
         self.replicate_api_key = None
         self.ai21_client = None
         self.stability_client = None
@@ -136,6 +139,9 @@ class ClientManager:
         self._setup_moonshot()
         self._setup_baichuan()
         self._setup_yi()
+        
+        # Add Chutes AI client
+        self._setup_chutes()
         
         logger.info("Client initialization completed")
     
@@ -535,4 +541,17 @@ class ClientManager:
             "moonshot": self.moonshot_client is not None,
             "baichuan": self.baichuan_client is not None,
             "yi": self.yi_client is not None,
+            "chutes": self.chutes_client is not None
         }
+
+    def _setup_chutes(self):
+        """Initialize Chutes AI client"""
+        api_key = os.getenv("CHUTES_API_KEY")
+        if api_key:
+            self.chutes_client = openai.OpenAI(
+                api_key=api_key,
+                base_url="https://llm.chutes.ai/v1"
+            )
+            logger.info("Chutes AI client initialized")
+        else:
+            logger.warning("CHUTES_API_KEY not found - Chutes AI features disabled")
