@@ -8,9 +8,9 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-blue?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-purple?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K)](https://modelcontextprotocol.io)
 
-**🎯 Get instant second opinions from 17 AI platforms and 800,000+ models**
+**🎯 Get instant second opinions from 18 AI platforms and 800,000+ models**
 
-*OpenAI • Gemini • Grok • Claude • HuggingFace • DeepSeek • OpenRouter • Mistral • Together AI • Cohere • Groq • Perplexity • Replicate • AI21 Labs • Stability AI • Fireworks AI • Anyscale*
+*OpenAI • Gemini • Grok • Claude • HuggingFace • DeepSeek • OpenRouter • Mistral • Together AI • Cohere • Groq • Perplexity • Replicate • AI21 Labs • Stability AI • Fireworks AI • Anyscale • Chutes AI*
 
 ---
 
@@ -105,7 +105,7 @@ Start multi-AI discussions where models can see and respond to each other's inpu
 
 * **Python 3.8+** - Programming language runtime
 * **Claude Desktop or Claude Code** - Choose your preferred MCP integration
-* **API Keys** - For any combination of the 16 supported AI platforms
+* **API Keys** - For any combination of the 17 supported AI platforms
 
 ## 📦 Installation Guide
 
@@ -148,6 +148,7 @@ Start multi-AI discussions where models can see and respond to each other's inpu
    | **Stability AI** | [platform.stability.ai](https://platform.stability.ai/account/keys) | 🎨 StableLM |
    | **Fireworks AI** | [fireworks.ai](https://fireworks.ai/account/api-keys) | 🔥 Fast Inference |
    | **Anyscale** | [console.anyscale.com](https://console.anyscale.com/credentials) | 🚀 Ray Serving |
+   | **Chutes AI** | [chutes.ai](https://chutes.ai) | 🧠 Advanced Reasoning |
 
    </details>
 
@@ -185,7 +186,8 @@ Add this to your Claude Desktop MCP configuration:
         "AI21_API_KEY": "your_ai21_key_here",
         "STABILITY_API_KEY": "your_stability_key_here",
         "FIREWORKS_API_KEY": "your_fireworks_key_here",
-        "ANYSCALE_API_KEY": "your_anyscale_key_here"
+        "ANYSCALE_API_KEY": "your_anyscale_key_here",
+        "CHUTES_API_KEY": "your_chutes_key_here"
       }
     }
   }
@@ -248,6 +250,7 @@ claude mcp add second-opinion -s user \
   -e STABILITY_API_KEY=your_stability_key_here \
   -e FIREWORKS_API_KEY=your_fireworks_key_here \
   -e ANYSCALE_API_KEY=your_anyscale_key_here \
+  -e CHUTES_API_KEY=your_chutes_key_here \
   -- /path/to/your/second-opinion/run.sh
 ```
 
@@ -290,7 +293,8 @@ Alternatively, you can manually add the server to your `.claude.json` file:
         "AI21_API_KEY": "your_ai21_key_here",
         "STABILITY_API_KEY": "your_stability_key_here",
         "FIREWORKS_API_KEY": "your_fireworks_key_here",
-        "ANYSCALE_API_KEY": "your_anyscale_key_here"
+        "ANYSCALE_API_KEY": "your_anyscale_key_here",
+        "CHUTES_API_KEY": "your_chutes_key_here"
       }
     }
   }
@@ -332,7 +336,7 @@ You should see `second-opinion` in the list of available MCP servers.
 <div align="center">
 
 ![Total Models](https://img.shields.io/badge/Total_Models-800%2C000%2B-brightgreen?style=flat-square)
-![Platforms](https://img.shields.io/badge/Platforms-16-blue?style=flat-square)
+![Platforms](https://img.shields.io/badge/Platforms-17-blue?style=flat-square)
 ![Updated](https://img.shields.io/badge/Updated-v4.0-orange?style=flat-square)
 
 </div>
@@ -531,6 +535,21 @@ You should see `second-opinion` in the list of available MCP servers.
 
 </details>
 
+<details>
+<summary>🧠 <strong>Chutes AI (Advanced Reasoning)</strong></summary>
+
+| Model | Description | Best For |
+|-------|-------------|----------|
+| `moonshotai/Kimi-K2-Thinking` | Advanced reasoning model | 🧠 Complex reasoning |
+| `Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8` | Large scale coding specialist | 💻 Programming |
+| `zai-org/GLM-4.6` | Code generation specialist | 💻 Development |
+| `MiniMaxAI/MiniMax-M2` | Efficient and fast performance | ⚡ Quick tasks |
+| `deepseek-ai/DeepSeek-R1` | Small and fast inference | 🏃 Speed |
+
+> **🌟 Special**: Access to *advanced reasoning models with cutting-edge capabilities*
+
+</details>
+
 </details>
 
 <div align="center">
@@ -592,6 +611,8 @@ You should see `second-opinion` in the list of available MCP servers.
 🏢 "What does Cohere's command-r-plus think about this business strategy?"
 
 🔗 "Get Together AI's Llama-405B opinion on this complex problem"
+
+🧠 "Use Chutes AI's Kimi K2 Thinking model for advanced reasoning"
 ```
 
 ### 🎭 **Advanced Features**
@@ -610,6 +631,8 @@ You should see `second-opinion` in the list of available MCP servers.
 🔥 "Get a super-fast response from Fireworks AI's Llama model"
 
 🚀 "Use Anyscale's enterprise-grade Llama serving for this complex task"
+
+🧠 "Get Chutes AI's GLM-4.6 opinion on this code optimization"
 ```
 
 </details>
@@ -634,6 +657,7 @@ You should see `second-opinion` in the list of available MCP servers.
 * **`get_stability_opinion`** - Get opinion from Stability AI's StableLM models (NEW)
 * **`get_fireworks_opinion`** - Get ultra-fast responses from Fireworks AI (NEW)
 * **`get_anyscale_opinion`** - Get enterprise-grade responses from Anyscale (NEW)
+* **`get_chutes_opinion`** - Get advanced reasoning responses from Chutes AI (NEW)
 
 ### Model Comparisons  
 * **`compare_openai_models`** - Compare multiple OpenAI models
@@ -647,7 +671,7 @@ You should see `second-opinion` in the list of available MCP servers.
 * **`list_personalities`** - See all available AI personalities and their descriptions
 
 ### Cross-Platform Features
-* **`cross_platform_comparison`** - Compare across all 17 AI platforms: OpenAI, Gemini, Grok, Claude, HuggingFace, DeepSeek, OpenRouter, Mistral, Together AI, Cohere, Groq Fast, Perplexity, Replicate, AI21 Labs, Stability AI, Fireworks AI & Anyscale
+* **`cross_platform_comparison`** - Compare across all 18 AI platforms: OpenAI, Gemini, Grok, Claude, HuggingFace, DeepSeek, OpenRouter, Mistral, Together AI, Cohere, Groq Fast, Perplexity, Replicate, AI21 Labs, Stability AI, Fireworks AI, Anyscale & Chutes AI
 * **`group_discussion`** - Multi-round discussions between AI models with shared context (supports all platforms)
 
 ### Conversation Management
@@ -710,7 +734,7 @@ Your API keys stay private on your machine. The MCP server only sends model resp
 
 ### Previous Updates (v4.0)
 - ✅ **5 New Major AI Platforms**: Replicate, AI21 Labs, Stability AI, Fireworks AI, Anyscale
-- ✅ **16 Total Platforms**: Now supporting 16 different AI platforms and 800,000+ models
+- ✅ **17 Total Platforms**: Now supporting 17 different AI platforms and 800,000+ models
 - ✅ **Advanced Reasoning**: AI21 Labs' Jamba models with state-space architecture
 - ✅ **Ultra-Fast Inference**: Fireworks AI for blazing-fast open model serving
 
