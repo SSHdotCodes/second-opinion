@@ -378,9 +378,11 @@ You should see `second-opinion` in the list of available MCP servers.
 
 | Model | Description | Best For |
 |-------|-------------|----------|
-| `claude-4-opus-20250522` | Most advanced Claude | 🧠 Complex reasoning |
-| `claude-4-sonnet-20250522` | Versatile general tasks | ⚖️ Balanced performance |
-| `claude-3-7-sonnet-20250224` | Stable and reliable | 🛡️ Production use |
+| `claude-opus-4-20250514` | Most advanced Claude 4 | 🧠 Complex reasoning |
+| `claude-sonnet-4-20250514` | Versatile general tasks | ⚖️ Balanced performance |
+| `claude-opus-4-5-20251101` | Claude 4.5 Opus | 🧠 Top-tier reasoning |
+| `claude-sonnet-4-5-20250929` | Claude 4.5 Sonnet | ⚖️ Best overall balance |
+| `claude-3-7-sonnet-20250219` | Stable and reliable | 🛡️ Production use |
 | `claude-3-5-sonnet-20241022` | Efficient, lighter model | 💨 Fast responses |
 
 </details>

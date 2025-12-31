@@ -320,8 +320,16 @@ class MCPServer:
                         "model": {
                             "type": "string",
                             "description": "Claude model to use",
-                            "enum": ["claude-4-opus-20250522", "claude-4-sonnet-20250522", "claude-3-7-sonnet-20250224", "claude-3-5-sonnet-20241022"],
-                            "default": "claude-4-sonnet-20250514"
+                            "enum": [
+                                "claude-sonnet-4-20250514",
+                                "claude-sonnet-4-5-20250929",
+                                "claude-opus-4-20250514",
+                                "claude-opus-4-1-20250805",
+                                "claude-opus-4-5-20251101",
+                                "claude-3-7-sonnet-20250219",
+                                "claude-3-5-sonnet-20241022"
+                            ],
+                            "default": "claude-sonnet-4-20250514"
                         },
                         "temperature": {
                             "type": "number",

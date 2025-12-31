@@ -81,7 +81,7 @@ class AIProviders:
                     "openai": "gpt-4.1",
                     "gemini": "gemini-2.5-flash-lite-preview-06-17",
                     "grok": "grok-4",
-                    "claude": "claude-4-sonnet-20250514",
+                    "claude": "claude-sonnet-4-20250514",
                     "deepseek": "deepseek-chat",
                     "groq_fast": "llama-3.1-70b-versatile",
                     "perplexity": "llama-3.1-sonar-large-128k-online",
@@ -342,7 +342,7 @@ class AIProviders:
     async def get_claude_opinion(
         self,
         prompt: str,
-        model: str = "claude-4-sonnet-20250514",
+        model: str = "claude-sonnet-4-20250514",
         temperature: float = 0.7,
         max_tokens: int = 8000,
         reset_conversation: bool = False,

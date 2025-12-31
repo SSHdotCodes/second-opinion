@@ -92,7 +92,7 @@
     },
     {
       "platform": "claude",
-      "model": "claude-4-sonnet-20250514",
+      "model": "claude-sonnet-4-20250514",
       "description": "Anthropic's balanced model - great for general tasks",
       "quality_score": 90
     },
@@ -122,7 +122,7 @@
     },
     {
       "platform": "claude",
-      "model": "claude-4-opus-20250522",
+      "model": "claude-opus-4-20250514",
       "description": "Anthropic's most powerful model - highest capability, but slow and sometimes errors",
       "quality_score": 95
     },
@@ -194,7 +194,7 @@
     },
     {
       "platform": "claude",
-      "model": "claude-3-7-sonnet-20250224",
+      "model": "claude-3-7-sonnet-20250219",
       "description": "Anthropic's stable previous generation",
       "quality_score": 74
     },
@@ -275,23 +275,23 @@
   ],
   "personality_defaults": {
     "honest": {
-      "preferred_models": ["grok-4", "gpt-4.1", "gemini-2.5-flash", "grok-3", "claude-4-sonnet-20250514", "deepseek-chat"],
+      "preferred_models": ["grok-4", "gpt-4.1", "gemini-2.5-flash", "grok-3", "claude-sonnet-4-20250514", "deepseek-chat"],
       "reason": "These models tend to be more direct and factual"
     },
     "friend": {
-      "preferred_models": ["grok-4", "claude-4-sonnet-20250514", "gemini-2.5-flash", "gpt-4.1"],
+      "preferred_models": ["grok-4", "claude-sonnet-4-20250514", "gemini-2.5-flash", "gpt-4.1"],
       "reason": "These models are better at emotional and supportive responses"
     },
     "coach": {
-      "preferred_models": ["grok-4", "gpt-4.1", "gemini-2.5-flash", "claude-4-opus-20250522", "grok-3"],
+      "preferred_models": ["grok-4", "gpt-4.1", "gemini-2.5-flash", "claude-opus-4-20250514", "grok-3"],
       "reason": "These models excel at motivational and goal-oriented responses"
     },
     "wise": {
-      "preferred_models": ["grok-4", "claude-4-opus-20250522", "gemini-2.5-pro", "gemini-2.5-flash", "gpt-4.1"],
+      "preferred_models": ["grok-4", "claude-opus-4-20250514", "gemini-2.5-pro", "gemini-2.5-flash", "gpt-4.1"],
       "reason": "These models provide the most thoughtful and philosophical responses"
     },
     "creative": {
-      "preferred_models": ["grok-4", "gpt-4o", "gpt-4.1", "gemini-2.5-flash", "claude-4-sonnet-20250514"],
+      "preferred_models": ["grok-4", "gpt-4o", "gpt-4.1", "gemini-2.5-flash", "claude-sonnet-4-20250514"],
       "reason": "These models are most innovative and artistic in their responses"
     }
   }
