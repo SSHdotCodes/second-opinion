@@ -27,7 +27,7 @@ def load_cli_module():
 class RegistryTests(unittest.TestCase):
     def test_required_agents_are_registered(self):
         module = load_cli_module()
-        self.assertEqual({"codex", "claude", "opencode", "grok"}, set(module.AGENTS))
+        self.assertEqual({"codex", "claude", "opencode", "grok", "antigravity"}, set(module.AGENTS))
 
     def test_each_skill_mentions_every_target(self):
         module = load_cli_module()
@@ -76,6 +76,7 @@ class CliCommandTests(unittest.TestCase):
                 home / ".claude/skills/second-opinion/SKILL.md",
                 home / ".config/opencode/skills/second-opinion/SKILL.md",
                 home / ".grok/skills/second-opinion/SKILL.md",
+                home / ".gemini/antigravity/skills/second-opinion/SKILL.md",
             ]
             for path in expected:
                 self.assertTrue(path.exists(), path)
@@ -86,8 +87,9 @@ class CliCommandTests(unittest.TestCase):
             result = self.run_cli("status", "--json", home=Path(temp))
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
-            self.assertEqual(payload["version"], "1.1.1")
+            self.assertEqual(payload["version"], "1.2.0")
             self.assertIn("codex", payload["agents"])
+            self.assertIn("antigravity", payload["agents"])
 
     def test_ask_dry_run_builds_grok_prompt_after_single_flag(self):
         result = self.run_cli("ask", "grok", "--dry-run", "--", "review this")
@@ -109,13 +111,27 @@ class CliCommandTests(unittest.TestCase):
         self.assertIn("claude -p --permission-mode plan", result.stdout)
         self.assertNotIn("--bare", result.stdout)
 
+    def test_antigravity_dry_run_uses_sandbox_and_no_print_timeout(self):
+        result = self.run_cli("ask", "antigravity", "--dry-run", "--", "review this")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("agy --print --sandbox --print-timeout 0", result.stdout)
+        self.assertIn("review this", result.stdout)
+
+    def test_antigravity_alias_resolves_for_install(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            result = self.run_cli("install", "--agent", "agy", "--yes", home=home)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            path = home / ".gemini/antigravity/skills/second-opinion/SKILL.md"
+            self.assertTrue(path.exists(), path)
+
     def test_timeout_flag_is_deprecated_noop(self):
         module = load_cli_module()
         source = CLI.read_text(encoding="utf-8")
         self.assertIn("Deprecated and ignored", source)
         self.assertNotIn("TimeoutExpired", source)
         self.assertNotIn("timeout=", source)
-        self.assertEqual(module.VERSION, "1.1.1")
+        self.assertEqual(module.VERSION, "1.2.0")
 
     def test_background_job_writes_log_and_metadata(self):
         module = load_cli_module()

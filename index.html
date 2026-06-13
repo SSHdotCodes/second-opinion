@@ -215,7 +215,7 @@
 
       .grid {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
         border: 1px solid var(--line);
       }
 
@@ -363,7 +363,7 @@
         <div>
           <h1>Second Opinion</h1>
           <p class="lead">
-            Mix Codex, Claude Code, OpenCode, and Grok Build as opt-in subagents.
+            Mix Codex, Claude Code, OpenCode, Grok Build, and Google Antigravity as opt-in subagents.
             Each agent keeps its own CLI, account, model access, and safety settings.
           </p>
           <div class="actions">
@@ -414,6 +414,11 @@ second-opinion wait JOB_ID</pre>
               <h3>Fast exploration</h3>
               <p>Useful for broad investigation, implementation spikes, and xAI/Grok-specific tasks.</p>
             </article>
+            <article class="agent">
+              <span class="tag">Antigravity</span>
+              <h3>Google orchestration</h3>
+              <p>Useful for Gemini-backed analysis, Google stack work, and async agent workflows.</p>
+            </article>
           </div>
         </div>
       </section>
@@ -434,6 +439,7 @@ second-opinion wait JOB_ID</pre>
             <div class="command"><strong>Claude only</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --agent claude --yes</code></div>
             <div class="command"><strong>OpenCode only</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --agent opencode --yes</code></div>
             <div class="command"><strong>Grok only</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --agent grok --yes</code></div>
+            <div class="command"><strong>Antigravity only</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --agent antigravity --yes</code></div>
             <div class="command"><strong>SSH remote</strong><code>ssh dev@server 'curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --all --yes'</code></div>
           </div>
         </div>
@@ -452,6 +458,7 @@ second-opinion wait JOB_ID</pre>
             <div class="path"><b>Claude Code</b><code>~/.claude/skills/second-opinion/SKILL.md</code></div>
             <div class="path"><b>OpenCode</b><code>~/.config/opencode/skills/second-opinion/SKILL.md</code></div>
             <div class="path"><b>Grok Build</b><code>~/.grok/skills/second-opinion/SKILL.md</code></div>
+            <div class="path"><b>Google Antigravity</b><code>~/.gemini/antigravity/skills/second-opinion/SKILL.md</code></div>
           </div>
         </div>
       </section>

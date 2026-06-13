@@ -8,6 +8,7 @@ Second Opinion uses each agent's native local skill surface and avoids changing 
 | Claude Code | Skill | `~/.claude/skills/second-opinion/SKILL.md` |
 | OpenCode | Agent Skill | `~/.config/opencode/skills/second-opinion/SKILL.md` |
 | Grok Build | Skill | `~/.grok/skills/second-opinion/SKILL.md` |
+| Google Antigravity | Agent Skill | `~/.gemini/antigravity/skills/second-opinion/SKILL.md` |
 
 ## Runtime Delegation
 
@@ -24,9 +25,10 @@ second-opinion wait JOB_ID
 The CLI wraps the target agent's documented non-interactive mode:
 
 - Codex: `codex exec`
-- Claude Code: `claude --bare -p`
+- Claude Code: `claude -p`
 - OpenCode: `opencode run`
 - Grok Build: `grok -p`
+- Google Antigravity: `agy --print`
 
 ## Modes
 
