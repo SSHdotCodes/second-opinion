@@ -82,7 +82,7 @@ class CliCommandTests(unittest.TestCase):
             result = self.run_cli("status", "--json", home=Path(temp))
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
-            self.assertEqual(payload["version"], "1.0.0")
+            self.assertEqual(payload["version"], "1.0.2")
             self.assertIn("codex", payload["agents"])
 
     def test_ask_dry_run_builds_grok_prompt_after_single_flag(self):
@@ -91,6 +91,19 @@ class CliCommandTests(unittest.TestCase):
         self.assertIn("grok", result.stdout)
         self.assertIn("-p", result.stdout)
         self.assertIn("review this", result.stdout)
+
+    def test_codex_dry_run_uses_current_exec_flags(self):
+        result = self.run_cli("ask", "codex", "--dry-run", "--", "review this")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("codex exec", result.stdout)
+        self.assertIn("--sandbox read-only", result.stdout)
+        self.assertNotIn("--ask-for-approval", result.stdout)
+
+    def test_claude_dry_run_uses_normal_auth_mode(self):
+        result = self.run_cli("ask", "claude", "--dry-run", "--", "review this")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("claude -p --permission-mode plan", result.stdout)
+        self.assertNotIn("--bare", result.stdout)
 
 
 if __name__ == "__main__":
