@@ -378,7 +378,8 @@
           </div>
           <pre>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash
 
-second-opinion ask auto --from claude --cwd "$PWD" --mode consult -- "Review this patch."</pre>
+second-opinion ask auto --from claude --cwd "$PWD" --mode consult --background -- "Review this patch."
+second-opinion wait JOB_ID</pre>
         </div>
       </div>
     </header>
@@ -389,7 +390,7 @@ second-opinion ask auto --from claude --cwd "$PWD" --mode consult -- "Review thi
           <div class="section-head">
             <div>
               <h2>Agent Matrix</h2>
-              <p>Second Opinion installs native skills that teach each agent how to call another installed agent for a scoped task.</p>
+              <p>Second Opinion installs native skills that teach each agent how to start another installed agent in the background for a scoped task.</p>
             </div>
           </div>
           <div class="grid">

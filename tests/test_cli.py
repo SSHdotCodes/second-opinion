@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -34,6 +35,9 @@ class RegistryTests(unittest.TestCase):
             skill = module.render_skill(agent)
             self.assertIn(module.MARKER, skill)
             self.assertIn("second-opinion ask auto", skill)
+            self.assertIn("--background", skill)
+            self.assertIn("second-opinion wait JOB_ID", skill)
+            self.assertNotIn(f"second-opinion ask {agent.key} --from {agent.key}", skill)
             for key in module.AGENTS:
                 self.assertIn(f"`{key}`", skill)
 
@@ -82,7 +86,7 @@ class CliCommandTests(unittest.TestCase):
             result = self.run_cli("status", "--json", home=Path(temp))
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
-            self.assertEqual(payload["version"], "1.0.3")
+            self.assertEqual(payload["version"], "1.1.1")
             self.assertIn("codex", payload["agents"])
 
     def test_ask_dry_run_builds_grok_prompt_after_single_flag(self):
@@ -111,7 +115,47 @@ class CliCommandTests(unittest.TestCase):
         self.assertIn("Deprecated and ignored", source)
         self.assertNotIn("TimeoutExpired", source)
         self.assertNotIn("timeout=", source)
-        self.assertEqual(module.VERSION, "1.0.3")
+        self.assertEqual(module.VERSION, "1.1.1")
+
+    def test_background_job_writes_log_and_metadata(self):
+        module = load_cli_module()
+        with tempfile.TemporaryDirectory() as temp:
+            previous_home = os.environ.get("SECOND_OPINION_HOME")
+            os.environ["SECOND_OPINION_HOME"] = temp
+            try:
+                fake_agent = module.Agent(
+                    key="fake",
+                    display="Fake Agent",
+                    command="fake",
+                    skill_path=".fake/SKILL.md",
+                    compatibility="fake",
+                    aliases=(),
+                    strengths="test",
+                    consult_args=(),
+                    work_args=(),
+                )
+                rc = module.start_background_job(
+                    fake_agent,
+                    "consult",
+                    [sys.executable, "-c", "print('BACKGROUND_OK')"],
+                    Path(temp),
+                    "test task",
+                )
+                self.assertEqual(rc, 0)
+                jobs = list((Path(temp) / ".second-opinion/jobs").glob("*.json"))
+                self.assertEqual(len(jobs), 1)
+                payload = json.loads(jobs[0].read_text(encoding="utf-8"))
+                log_path = Path(payload["log_path"])
+                for _ in range(50):
+                    if log_path.exists() and "BACKGROUND_OK" in log_path.read_text(encoding="utf-8"):
+                        break
+                    time.sleep(0.1)
+                self.assertIn("BACKGROUND_OK", log_path.read_text(encoding="utf-8"))
+            finally:
+                if previous_home is None:
+                    os.environ.pop("SECOND_OPINION_HOME", None)
+                else:
+                    os.environ["SECOND_OPINION_HOME"] = previous_home
 
 
 if __name__ == "__main__":

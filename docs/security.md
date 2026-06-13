@@ -15,7 +15,7 @@ Second Opinion is a local orchestration helper. It does not proxy prompts throug
 - It does not install MCP servers.
 - It does not install hooks.
 - It does not change agent permission settings.
-- It does not run in the background.
+- It does not run a daemon. Background jobs are explicit subagent child processes started with `second-opinion ask --background`.
 
 ## File Safety
 

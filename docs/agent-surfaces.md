@@ -14,8 +14,12 @@ Second Opinion uses each agent's native local skill surface and avoids changing 
 The skill does not create an always-on server. When a parent agent chooses to delegate, it runs:
 
 ```bash
-second-opinion ask <target-or-auto> --from <caller> --cwd "$PWD" --mode consult -- "Task text"
+second-opinion ask <target-or-auto> --from <caller> --cwd "$PWD" --mode consult --background -- "Task text"
+second-opinion jobs
+second-opinion wait JOB_ID
 ```
+
+`--background` is the default workflow taught to installed agent skills. It returns a job id immediately, writes output under `~/.second-opinion/jobs/`, and lets the parent agent keep working while the subagent runs.
 
 The CLI wraps the target agent's documented non-interactive mode:
 

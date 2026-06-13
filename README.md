@@ -58,12 +58,16 @@ From any shell:
 
 ```bash
 second-opinion status
-second-opinion ask auto --from codex --cwd "$PWD" --mode consult -- "Review this change and call out risks."
-second-opinion ask claude --from opencode --cwd "$PWD" --mode consult -- "Find edge cases in the parser."
-second-opinion ask grok --from claude --cwd "$PWD" --mode work -- "Implement only the README command table."
+second-opinion ask auto --from codex --cwd "$PWD" --mode consult --background -- "Review this change and call out risks."
+second-opinion ask claude --from opencode --cwd "$PWD" --mode consult --background -- "Find edge cases in the parser."
+second-opinion ask grok --from claude --cwd "$PWD" --mode work --background -- "Implement only the README command table."
+second-opinion jobs
+second-opinion wait JOB_ID
 ```
 
-The installed skills teach each agent to use `consult` mode by default. Consult mode asks the target agent to inspect and report without editing files. `work` mode is available for narrow implementation slices, but should be assigned carefully so two agents do not edit the same files at the same time.
+The installed skills teach each agent to start subagents in the background by default. That lets the parent agent continue its own non-overlapping work while the subagent runs. Later, the parent runs `second-opinion wait JOB_ID` to collect the subagent output.
+
+Use `consult` mode by default. Consult mode asks the target agent to inspect and report without editing files. `work` mode is available for narrow implementation slices, but should be assigned carefully so two agents do not edit the same files at the same time.
 
 ## Supported Agents
 
@@ -83,7 +87,9 @@ second-opinion install --all --yes   # install all supported skills
 second-opinion uninstall --agent codex
 second-opinion status --json
 second-opinion choose --from claude --task "review auth flow"
-second-opinion ask auto --from claude --cwd "$PWD" --mode consult -- "Investigate failing tests."
+second-opinion ask auto --from claude --cwd "$PWD" --mode consult --background -- "Investigate failing tests."
+second-opinion jobs
+second-opinion wait JOB_ID
 second-opinion commands
 second-opinion doctor
 ```
