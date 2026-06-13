@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Second Opinion</title>
+    <meta
+      name="description"
+      content="Second Opinion lets Codex, Claude Code, OpenCode, and Grok Build use each other as opt-in coding subagents."
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #172026;
+        --muted: #5d6873;
+        --line: #d9e2e8;
+        --panel: #f7fafb;
+        --white: #ffffff;
+        --blue: #0f5e8c;
+        --green: #1d7f5f;
+        --gold: #9a6a13;
+        --red: #a74444;
+        --code: #10212b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--white);
+        line-height: 1.5;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration-thickness: 0.08em;
+        text-underline-offset: 0.16em;
+      }
+
+      header {
+        border-bottom: 1px solid var(--line);
+        background: #fbfdfe;
+      }
+
+      nav,
+      .wrap {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 64px;
+        gap: 16px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 760;
+        letter-spacing: 0;
+      }
+
+      .mark {
+        width: 28px;
+        height: 28px;
+        border: 2px solid var(--ink);
+        display: grid;
+        place-items: center;
+        background: var(--green);
+      }
+
+      .mark::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        background: var(--white);
+        border: 2px solid var(--ink);
+      }
+
+      .navlinks {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-size: 0.95rem;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 40px;
+        align-items: center;
+        padding: 56px 0 44px;
+      }
+
+      h1 {
+        margin: 0 0 16px;
+        font-size: clamp(2.1rem, 6vw, 4.7rem);
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        margin: 0 0 24px;
+        max-width: 680px;
+        color: var(--muted);
+        font-size: clamp(1.04rem, 2.2vw, 1.25rem);
+      }
+
+      .terminal {
+        background: var(--code);
+        color: #e9f4f7;
+        border: 1px solid #264657;
+        box-shadow: 0 18px 42px rgba(16, 33, 43, 0.16);
+      }
+
+      .terminal-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 42px;
+        padding: 0 14px;
+        border-bottom: 1px solid #28485a;
+        color: #a8c2cc;
+        font-size: 0.84rem;
+      }
+
+      .dots {
+        display: flex;
+        gap: 7px;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--green);
+      }
+
+      .dot:nth-child(2) {
+        background: var(--gold);
+      }
+
+      .dot:nth-child(3) {
+        background: var(--red);
+      }
+
+      pre {
+        margin: 0;
+        padding: 18px;
+        overflow-x: auto;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 0.92rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 15px;
+        border: 1px solid var(--ink);
+        background: var(--ink);
+        color: var(--white);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .button.secondary {
+        background: var(--white);
+        color: var(--ink);
+      }
+
+      main section {
+        border-top: 1px solid var(--line);
+        padding: 36px 0;
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        font-size: 1.35rem;
+        letter-spacing: 0;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 18px;
+      }
+
+      .section-head p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 720px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        border: 1px solid var(--line);
+      }
+
+      .agent {
+        min-height: 178px;
+        padding: 18px;
+        border-right: 1px solid var(--line);
+        background: var(--white);
+      }
+
+      .agent:last-child {
+        border-right: 0;
+      }
+
+      .agent h3 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+
+      .agent p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
+      .tag {
+        display: inline-block;
+        margin-bottom: 14px;
+        padding: 2px 8px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .commands {
+        display: grid;
+        grid-template-columns: 1fr;
+        border: 1px solid var(--line);
+      }
+
+      .command {
+        display: grid;
+        grid-template-columns: 170px minmax(0, 1fr);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .command:last-child {
+        border-bottom: 0;
+      }
+
+      .command strong {
+        padding: 14px 16px;
+        background: var(--panel);
+        border-right: 1px solid var(--line);
+      }
+
+      .command code {
+        display: block;
+        padding: 14px 16px;
+        overflow-x: auto;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 0.91rem;
+        white-space: nowrap;
+      }
+
+      .paths {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .path {
+        padding: 16px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+      }
+
+      .path b {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .path code {
+        font-size: 0.9rem;
+        word-break: break-all;
+      }
+
+      footer {
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        padding: 26px 0 38px;
+        font-size: 0.94rem;
+      }
+
+      @media (max-width: 860px) {
+        .hero {
+          grid-template-columns: 1fr;
+          padding-top: 34px;
+        }
+
+        .grid,
+        .paths {
+          grid-template-columns: 1fr;
+        }
+
+        .agent {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .agent:last-child {
+          border-bottom: 0;
+        }
+
+        .command {
+          grid-template-columns: 1fr;
+        }
+
+        .command strong {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        nav {
+          align-items: start;
+          flex-direction: column;
+          padding: 16px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div class="brand"><span class="mark" aria-hidden="true"></span> Second Opinion</div>
+        <div class="navlinks">
+          <a href="https://github.com/SSHdotCodes/second-opinion">GitHub</a>
+          <a href="#commands">Commands</a>
+          <a href="#paths">Install paths</a>
+        </div>
+      </nav>
+      <div class="wrap hero">
+        <div>
+          <h1>Second Opinion</h1>
+          <p class="lead">
+            Mix Codex, Claude Code, OpenCode, and Grok Build as opt-in subagents.
+            Each agent keeps its own CLI, account, model access, and safety settings.
+          </p>
+          <div class="actions">
+            <a class="button" href="install.sh">Download installer</a>
+            <a class="button secondary" href="https://github.com/SSHdotCodes/second-opinion">View repo</a>
+          </div>
+        </div>
+        <div class="terminal" aria-label="Install command">
+          <div class="terminal-top">
+            <span>install</span>
+            <span class="dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
+          </div>
+          <pre>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash
+
+second-opinion ask auto --from claude --cwd "$PWD" --mode consult -- "Review this patch."</pre>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <h2>Agent Matrix</h2>
+              <p>Second Opinion installs native skills that teach each agent how to call another installed agent for a scoped task.</p>
+            </div>
+          </div>
+          <div class="grid">
+            <article class="agent">
+              <span class="tag">Codex</span>
+              <h3>Implementation and tests</h3>
+              <p>Useful for repo-wide edits, patch review, and OpenAI/Codex ecosystem work.</p>
+            </article>
+            <article class="agent">
+              <span class="tag">Claude Code</span>
+              <h3>Architecture and review</h3>
+              <p>Useful for design review, edge cases, refactors, and reasoning-heavy analysis.</p>
+            </article>
+            <article class="agent">
+              <span class="tag">OpenCode</span>
+              <h3>Provider-flexible tasks</h3>
+              <p>Useful when you want the user's configured OpenCode models and providers involved.</p>
+            </article>
+            <article class="agent">
+              <span class="tag">Grok Build</span>
+              <h3>Fast exploration</h3>
+              <p>Useful for broad investigation, implementation spikes, and xAI/Grok-specific tasks.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="commands">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <h2>Copy-Paste Commands</h2>
+              <p>Use the main installer for an interactive setup, or pass flags for a specific agent or remote SSH install.</p>
+            </div>
+          </div>
+          <div class="commands">
+            <div class="command"><strong>Main CLI</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash</code></div>
+            <div class="command"><strong>Detected agents</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --yes</code></div>
+            <div class="command"><strong>All agents</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --all --yes</code></div>
+            <div class="command"><strong>Codex only</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --agent codex --yes</code></div>
+            <div class="command"><strong>Claude only</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --agent claude --yes</code></div>
+            <div class="command"><strong>OpenCode only</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --agent opencode --yes</code></div>
+            <div class="command"><strong>Grok only</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --agent grok --yes</code></div>
+            <div class="command"><strong>SSH remote</strong><code>ssh dev@server 'curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --all --yes'</code></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="paths">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <h2>Install Paths</h2>
+              <p>The installer only writes the CLI and these skill files. It skips non-generated files unless you pass <code>--force</code>.</p>
+            </div>
+          </div>
+          <div class="paths">
+            <div class="path"><b>Codex</b><code>~/.agents/skills/second-opinion/SKILL.md</code></div>
+            <div class="path"><b>Claude Code</b><code>~/.claude/skills/second-opinion/SKILL.md</code></div>
+            <div class="path"><b>OpenCode</b><code>~/.config/opencode/skills/second-opinion/SKILL.md</code></div>
+            <div class="path"><b>Grok Build</b><code>~/.grok/skills/second-opinion/SKILL.md</code></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        Open source under MIT. No API keys, provider credentials, hooks, MCP servers, or model settings are modified.
+      </div>
+    </footer>
+  </body>
+</html>
