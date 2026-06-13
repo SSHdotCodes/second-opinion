@@ -82,7 +82,7 @@ class CliCommandTests(unittest.TestCase):
             result = self.run_cli("status", "--json", home=Path(temp))
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
-            self.assertEqual(payload["version"], "1.0.2")
+            self.assertEqual(payload["version"], "1.0.3")
             self.assertIn("codex", payload["agents"])
 
     def test_ask_dry_run_builds_grok_prompt_after_single_flag(self):
@@ -104,6 +104,14 @@ class CliCommandTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("claude -p --permission-mode plan", result.stdout)
         self.assertNotIn("--bare", result.stdout)
+
+    def test_timeout_flag_is_deprecated_noop(self):
+        module = load_cli_module()
+        source = CLI.read_text(encoding="utf-8")
+        self.assertIn("Deprecated and ignored", source)
+        self.assertNotIn("TimeoutExpired", source)
+        self.assertNotIn("timeout=", source)
+        self.assertEqual(module.VERSION, "1.0.3")
 
 
 if __name__ == "__main__":
