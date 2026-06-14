@@ -125,3 +125,7 @@ SECOND_OPINION_BASE_URL=http://127.0.0.1:8080 bash install.sh --cli-only
 ## License
 
 MIT
+
+---
+
+Built by [SSH](https://ssh.codes).
