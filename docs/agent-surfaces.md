@@ -46,6 +46,18 @@ The CLI wraps the target agent's documented non-interactive mode:
 
 `work` is for narrow implementation slices. The parent agent should assign non-overlapping files and verify the subagent's result before integrating it.
 
+## Goal Mode
+
+Goal mode is available with `second-opinion ask --goal "..."`, but it is not the default and should not be recommended for routine delegation.
+
+Use it only when the user explicitly asks to use goals, or when the user has clearly requested a long-running delegated goal:
+
+```bash
+second-opinion ask auto --from codex --cwd "$PWD" --mode work --background --goal "Finish the migration tests and report blockers." -- "Work toward this goal in the assigned files only."
+```
+
+The parent agent still owns goal tracking. It should keep the returned job id, check `second-opinion jobs`, call `second-opinion wait JOB_ID`, verify output and edits, and avoid declaring the overall user task complete while that delegated goal is running or unresolved.
+
 ## Updating
 
 Once installed, update the CLI and existing managed skills with:

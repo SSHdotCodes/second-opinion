@@ -430,13 +430,14 @@ second-opinion update</pre>
           <div class="section-head">
             <div>
               <h2>Copy-Paste Commands</h2>
-              <p>Use the main installer for an interactive setup, pass flags for a specific agent or remote SSH install, and run the updater when a newer version is published.</p>
+              <p>Use the main installer for an interactive setup, pass flags for a specific agent or remote SSH install, and run the updater when a newer version is published. Goal mode is opt-in for explicitly requested long-running delegation.</p>
             </div>
           </div>
           <div class="commands">
             <div class="command"><strong>Main CLI</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash</code></div>
             <div class="command"><strong>Update</strong><code>second-opinion update</code></div>
             <div class="command"><strong>Skip FreedomClaude</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --skip-freedomclaude</code></div>
+            <div class="command"><strong>Goal mode</strong><code>second-opinion ask auto --background --goal "Finish the assigned migration tests." -- "Work toward this bounded goal only."</code></div>
             <div class="command"><strong>Detected agents</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --yes</code></div>
             <div class="command"><strong>All agents</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --all --yes</code></div>
             <div class="command"><strong>Codex only</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --agent codex --yes</code></div>

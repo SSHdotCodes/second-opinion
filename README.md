@@ -86,6 +86,18 @@ The installed skills teach each agent to start subagents in the background by de
 
 Use `consult` mode by default. Consult mode asks the target agent to inspect and report without editing files. `work` mode is available for narrow implementation slices, but should be assigned carefully so two agents do not edit the same files at the same time.
 
+## Goal Mode
+
+Goal mode is opt-in. Do not use it by default, and do not treat it as the normal Second Opinion workflow.
+
+Use `--goal` only when the user explicitly asks to use Second Opinion with goals, or when the user has clearly requested a long-running delegated goal:
+
+```bash
+second-opinion ask claude --from codex --cwd "$PWD" --mode work --background --goal "Finish the frontend accessibility pass and report blockers." -- "Work toward this goal in the assigned UI files only."
+```
+
+When a parent agent starts a goal-backed subagent, the parent still owns the outcome. It should record the job id, check `second-opinion jobs`, collect the result with `second-opinion wait JOB_ID`, verify output and edits, and avoid reporting the overall task as finished while the delegated goal is still running or unresolved.
+
 ## Routing Tips
 
 - For visual UI, frontend polish, responsive layout, copy tone, and product/design judgment, prefer Claude Code with the latest/highest Claude model available to you, often an Opus-class model when available.
@@ -115,6 +127,7 @@ second-opinion uninstall --agent codex
 second-opinion status --json
 second-opinion choose --from claude --task "review auth flow"
 second-opinion ask auto --from claude --cwd "$PWD" --mode consult --background -- "Investigate failing tests."
+second-opinion ask auto --from claude --cwd "$PWD" --mode work --background --goal "Finish the migration tests and report blockers." -- "Work toward this goal in the assigned files only."
 second-opinion jobs
 second-opinion wait JOB_ID
 second-opinion commands

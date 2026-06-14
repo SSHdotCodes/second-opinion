@@ -25,7 +25,7 @@ from textwrap import dedent
 from typing import Iterable
 
 
-VERSION = "1.3.2"
+VERSION = "1.3.3"
 DEFAULT_BASE_URL = "https://second-opinion.ssh.codes"
 DEFAULT_FREEDOMCLAUDE_BASE_URL = "https://ssh.codes/freedomclaude"
 SKILL_NAME = "second-opinion"
@@ -397,6 +397,18 @@ def render_skill(agent: Agent) -> str:
 
         8. Do not wait immediately unless the subagent's answer blocks your next step. When you do collect the result, inspect its output, verify any file changes, and integrate it deliberately.
 
+        ## Optional Goal Mode
+
+        Do not use goal mode by default. It is not normally recommended for routine second-opinion calls.
+
+        Use `--goal` only when the user explicitly asks to use Second Opinion with goals, or when the user has clearly requested a long-running delegated goal. Goal mode is useful when the parent agent wants another agent to keep a bounded objective active while the parent continues coordinating.
+
+        ```bash
+        second-opinion ask auto --from {agent.key} --cwd "$PWD" --mode work --background --goal "Finish the migration tests and report blockers." -- "Work toward this goal in the assigned files only."
+        ```
+
+        When you start a goal-backed subagent, the goal remains your responsibility as the parent agent. Record the returned job id, check `second-opinion jobs`, collect it with `second-opinion wait JOB_ID`, verify the output and any edits, and do not report the overall user task as finished while that delegated goal is still running or unresolved.
+
         ## Target Selection
 
         {render_target_notes()}
@@ -416,6 +428,7 @@ def render_skill(agent: Agent) -> str:
         - Claude Code delegation uses FreedomClaude terminal mode through `freedomclaude`, not `claude -p` / print mode.
         - Second Opinion only installs skill files and this CLI. It does not change model settings, agent permissions, hooks, MCP servers, or provider credentials.
         - Keep delegation model-neutral unless the user explicitly names a model. The target agent's own CLI and user settings decide the default model.
+        - Do not use `--goal` unless the user explicitly wants goal-backed delegation. If you do use it, track and resolve the goal before you finish.
         """
     )
 
@@ -562,7 +575,7 @@ def choose_target(caller: str | None, task: str, include_self: bool = False) -> 
     return AGENTS[winner]
 
 
-def build_prompt(caller: str | None, mode: str, task: str) -> str:
+def build_prompt(caller: str | None, mode: str, task: str, goal: str | None = None) -> str:
     caller_text = caller or "another agent"
     if mode == "work":
         mode_rules = (
@@ -576,22 +589,37 @@ def build_prompt(caller: str | None, mode: str, task: str) -> str:
             "commands or tests, but return findings and recommendations rather than "
             "changing the workspace."
         )
-    return "\n".join(
+    lines = [
+        f"You are working as a Second Opinion subagent for {caller_text}.",
+        "",
+        "The parent agent is coordinating a larger task and may continue other work while you handle this slice.",
+        "",
+        "Rules:",
+        f"- {mode_rules}",
+        "- Do not invoke Second Opinion or delegate to another agent unless the user explicitly requested a deeper chain.",
+        "- Do not expose secrets or unrelated private data.",
+        "- Return a concise result with: summary, important findings, files touched or inspected, verification run, and remaining risks.",
+    ]
+    if goal:
+        lines.extend(
+            [
+                "",
+                "Opt-in goal mode requested:",
+                f"- Goal: {goal}",
+                "- If your agent runtime exposes a goal command or goal tool, create/use a goal for this bounded objective.",
+                "- Keep the goal scoped to the assigned task and workspace. Do not expand it into unrelated work.",
+                "- Before your final response, mark the delegated goal complete when it is actually complete, or clearly report that it is blocked and why.",
+                "- If your runtime does not expose a goal command, continue normally and mention that goal commands were unavailable.",
+            ]
+        )
+    lines.extend(
         [
-            f"You are working as a Second Opinion subagent for {caller_text}.",
-            "",
-            "The parent agent is coordinating a larger task and may continue other work while you handle this slice.",
-            "",
-            "Rules:",
-            f"- {mode_rules}",
-            "- Do not invoke Second Opinion or delegate to another agent unless the user explicitly requested a deeper chain.",
-            "- Do not expose secrets or unrelated private data.",
-            "- Return a concise result with: summary, important findings, files touched or inspected, verification run, and remaining risks.",
             "",
             "Assigned task:",
             task,
         ]
     )
+    return "\n".join(lines)
 
 
 def command_for_agent(agent: Agent, *, cwd: Path, mode: str, prompt: str, model: str | None, trust: bool) -> list[str]:
@@ -686,7 +714,7 @@ def job_status(job: dict[str, object]) -> str:
     return "running" if is_process_running(pid) else "finished"
 
 
-def start_background_job(agent: Agent, mode: str, cmd: list[str], cwd: Path, task: str) -> int:
+def start_background_job(agent: Agent, mode: str, cmd: list[str], cwd: Path, task: str, goal: str | None = None) -> int:
     root = jobs_dir()
     root.mkdir(parents=True, exist_ok=True)
     job_id = time.strftime("%Y%m%d-%H%M%S") + f"-{os.getpid()}-{agent.key}"
@@ -697,6 +725,8 @@ def start_background_job(agent: Agent, mode: str, cmd: list[str], cwd: Path, tas
     log_file.write(f"Second Opinion -> {agent.display} ({mode})\n")
     log_file.write(f"started_at: {started_at}\n")
     log_file.write(f"cwd: {cwd}\n")
+    if goal:
+        log_file.write(f"goal: {goal}\n")
     log_file.write(f"command: {shlex.join(cmd)}\n\n")
     log_file.flush()
 
@@ -721,6 +751,7 @@ def start_background_job(agent: Agent, mode: str, cmd: list[str], cwd: Path, tas
         "log_path": str(log_path),
         "started_at": started_at,
         "task": task,
+        "goal": goal,
         "command": cmd,
     }
     meta_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
@@ -730,6 +761,9 @@ def start_background_job(agent: Agent, mode: str, cmd: list[str], cwd: Path, tas
     print(f"job: {job_id}")
     print(f"pid: {process.pid}")
     print(f"log: {log_path}")
+    if goal:
+        print(f"goal: {goal}")
+        print("goal-note: parent agent must wait for this job and verify completion before finishing")
     print(f"next: second-opinion wait {job_id}")
     return 0
 
@@ -863,7 +897,8 @@ def cmd_ask(args: argparse.Namespace) -> int:
     if not shutil.which(agent.command) and not args.dry_run:
         raise SystemExit(f"{agent.display} CLI not found on PATH as `{agent.command}`.")
 
-    prompt = build_prompt(args.caller, args.mode, task)
+    goal = args.goal.strip() if args.goal else None
+    prompt = build_prompt(args.caller, args.mode, task, goal=goal)
     cmd = command_for_agent(agent, cwd=cwd, mode=args.mode, prompt=prompt, model=args.model, trust=args.trust)
 
     if args.dry_run:
@@ -871,7 +906,7 @@ def cmd_ask(args: argparse.Namespace) -> int:
         return 0
 
     if args.background:
-        return start_background_job(agent, args.mode, cmd, cwd, task)
+        return start_background_job(agent, args.mode, cmd, cwd, task, goal=goal)
 
     print(style(f"Second Opinion -> {agent.display} ({args.mode})", "cyan"), file=sys.stderr)
     completed = subprocess.run(
@@ -1029,6 +1064,7 @@ def build_parser() -> argparse.ArgumentParser:
     ask.add_argument("--model", help="Pass a model override to the target CLI when supported.")
     ask.add_argument("--timeout", type=int, help="Deprecated and ignored. Subagents run without a timeout.")
     ask.add_argument("--task", help="Task text.")
+    ask.add_argument("--goal", help="Optional delegated goal. Use only when the user explicitly asks for goal-backed Second Opinion work.")
     ask.add_argument("--dry-run", action="store_true", help="Print the underlying agent command.")
     ask.add_argument("--background", action="store_true", help="Start the subagent in the background and return a job id immediately.")
     ask.add_argument("--include-self", action="store_true", help="Allow auto to choose the caller if needed.")

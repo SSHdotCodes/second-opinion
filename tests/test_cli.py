@@ -42,6 +42,10 @@ class RegistryTests(unittest.TestCase):
             self.assertIn("Practical routing tips", skill)
             self.assertIn("visual UI, frontend polish", skill)
             self.assertIn("quality depends heavily on the selected model", skill)
+            self.assertIn("Optional Goal Mode", skill)
+            self.assertIn("Do not use goal mode by default", skill)
+            self.assertIn("second-opinion ask auto", skill)
+            self.assertIn("--goal", skill)
             self.assertNotIn(f"second-opinion ask {agent.key} --from {agent.key}", skill)
             for key in module.AGENTS:
                 self.assertIn(f"`{key}`", skill)
@@ -115,7 +119,7 @@ class CliCommandTests(unittest.TestCase):
             result = self.run_cli("status", "--json", home=Path(temp))
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
-            self.assertEqual(payload["version"], "1.3.2")
+            self.assertEqual(payload["version"], "1.3.3")
             self.assertIn("codex", payload["agents"])
             self.assertIn("antigravity", payload["agents"])
 
@@ -147,6 +151,24 @@ class CliCommandTests(unittest.TestCase):
         self.assertIn("freedomclaude", result.stdout)
         self.assertIn("-- --permission-mode plan --model fable", result.stdout)
 
+    def test_goal_prompt_is_opt_in(self):
+        result = self.run_cli("ask", "claude", "--dry-run", "--", "review this")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("Opt-in goal mode requested", result.stdout)
+
+        goal_result = self.run_cli(
+            "ask",
+            "claude",
+            "--goal",
+            "Finish the migration tests.",
+            "--dry-run",
+            "--",
+            "review this",
+        )
+        self.assertEqual(goal_result.returncode, 0, goal_result.stderr)
+        self.assertIn("Opt-in goal mode requested", goal_result.stdout)
+        self.assertIn("Goal: Finish the migration tests.", goal_result.stdout)
+
     def test_antigravity_dry_run_uses_sandbox_and_print_timeout(self):
         result = self.run_cli("ask", "antigravity", "--dry-run", "--", "review this")
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -176,7 +198,7 @@ class CliCommandTests(unittest.TestCase):
         self.assertIn("Deprecated and ignored", source)
         self.assertNotIn("TimeoutExpired", source)
         self.assertNotIn("subprocess.TimeoutExpired", source)
-        self.assertEqual(module.VERSION, "1.3.2")
+        self.assertEqual(module.VERSION, "1.3.3")
 
     def test_update_replaces_cli_from_base_url(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -237,11 +259,13 @@ class CliCommandTests(unittest.TestCase):
                     [sys.executable, "-c", "print('BACKGROUND_OK')"],
                     Path(temp),
                     "test task",
+                    goal="finish test goal",
                 )
                 self.assertEqual(rc, 0)
                 jobs = list((Path(temp) / ".second-opinion/jobs").glob("*.json"))
                 self.assertEqual(len(jobs), 1)
                 payload = json.loads(jobs[0].read_text(encoding="utf-8"))
+                self.assertEqual(payload["goal"], "finish test goal")
                 log_path = Path(payload["log_path"])
                 for _ in range(50):
                     if log_path.exists() and "BACKGROUND_OK" in log_path.read_text(encoding="utf-8"):
