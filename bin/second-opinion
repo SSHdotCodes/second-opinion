@@ -25,7 +25,7 @@ from textwrap import dedent
 from typing import Iterable
 
 
-VERSION = "1.3.0"
+VERSION = "1.3.1"
 DEFAULT_BASE_URL = "https://second-opinion.ssh.codes"
 DEFAULT_FREEDOMCLAUDE_BASE_URL = "https://ssh.codes/freedomclaude"
 SKILL_NAME = "second-opinion"
@@ -98,8 +98,8 @@ AGENTS: dict[str, Agent] = {
         compatibility="google-antigravity",
         aliases=("agy", "google", "google-antigravity", "gemini-antigravity"),
         strengths="Google/Gemini ecosystem work, model-aware analysis, asynchronous agent workflows, and broad project orchestration.",
-        consult_args=("--print", "--sandbox", "--print-timeout", "0"),
-        work_args=("--print", "--print-timeout", "0"),
+        consult_args=("--print", "--sandbox", "--print-timeout", "5m0s"),
+        work_args=("--print", "--print-timeout", "5m0s"),
     ),
 }
 
@@ -605,12 +605,15 @@ def command_for_agent(agent: Agent, *, cwd: Path, mode: str, prompt: str, model:
 
     if agent.key == "antigravity":
         args = list(agent.work_args if mode == "work" else agent.consult_args)
-        cmd = [exe, *args]
+        cmd = [exe]
+        if args and args[0] == "--print":
+            cmd.extend(["--print", prompt, *args[1:]])
+        else:
+            cmd.extend([*args, prompt])
         if model:
             cmd.extend(["--model", model])
         if mode == "work" and trust:
             cmd.append("--dangerously-skip-permissions")
-        cmd.append(prompt)
         return cmd
 
     raise AssertionError(f"Unhandled agent {agent.key}")

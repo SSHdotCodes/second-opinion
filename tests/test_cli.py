@@ -89,7 +89,7 @@ class CliCommandTests(unittest.TestCase):
             result = self.run_cli("status", "--json", home=Path(temp))
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
-            self.assertEqual(payload["version"], "1.3.0")
+            self.assertEqual(payload["version"], "1.3.1")
             self.assertIn("codex", payload["agents"])
             self.assertIn("antigravity", payload["agents"])
 
@@ -121,11 +121,20 @@ class CliCommandTests(unittest.TestCase):
         self.assertIn("freedomclaude", result.stdout)
         self.assertIn("-- --permission-mode plan --model fable", result.stdout)
 
-    def test_antigravity_dry_run_uses_sandbox_and_no_print_timeout(self):
+    def test_antigravity_dry_run_uses_sandbox_and_print_timeout(self):
         result = self.run_cli("ask", "antigravity", "--dry-run", "--", "review this")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("agy --print --sandbox --print-timeout 0", result.stdout)
+        self.assertIn("agy --print", result.stdout)
+        self.assertIn("--sandbox --print-timeout 5m0s", result.stdout)
         self.assertIn("review this", result.stdout)
+        self.assertLess(result.stdout.index("--print"), result.stdout.index("review this"))
+        self.assertLess(result.stdout.index("review this"), result.stdout.index("--sandbox"))
+
+    def test_antigravity_model_override_is_passed_after_prompt(self):
+        result = self.run_cli("ask", "antigravity", "--model", "Gemini 3.5 Flash (Low)", "--dry-run", "--", "review this")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("--model 'Gemini 3.5 Flash (Low)'", result.stdout)
+        self.assertLess(result.stdout.index("review this"), result.stdout.index("--model"))
 
     def test_antigravity_alias_resolves_for_install(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -141,7 +150,7 @@ class CliCommandTests(unittest.TestCase):
         self.assertIn("Deprecated and ignored", source)
         self.assertNotIn("TimeoutExpired", source)
         self.assertNotIn("subprocess.TimeoutExpired", source)
-        self.assertEqual(module.VERSION, "1.3.0")
+        self.assertEqual(module.VERSION, "1.3.1")
 
     def test_update_replaces_cli_from_base_url(self):
         with tempfile.TemporaryDirectory() as temp:
