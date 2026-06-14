@@ -48,7 +48,7 @@ The CLI wraps the target agent's documented non-interactive mode:
 
 ## Goal Mode
 
-Goal mode is available with `second-opinion ask --goal "..."`, but it is not the default and should not be recommended for routine delegation.
+Goal mode is available with `second-opinion ask --goal "..."`, but it is not the default and should not be recommended for routine delegation. For targets with a known native goal command, Second Opinion includes that target's `/goal ...` command in the subagent prompt.
 
 Use it only when the user explicitly asks to use goals, or when the user has clearly requested a long-running delegated goal:
 

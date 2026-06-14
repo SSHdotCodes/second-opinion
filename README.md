@@ -90,7 +90,7 @@ Use `consult` mode by default. Consult mode asks the target agent to inspect and
 
 Goal mode is opt-in. Do not use it by default, and do not treat it as the normal Second Opinion workflow.
 
-Use `--goal` only when the user explicitly asks to use Second Opinion with goals, or when the user has clearly requested a long-running delegated goal:
+Use `--goal` only when the user explicitly asks to use Second Opinion with goals, or when the user has clearly requested a long-running delegated goal. For targets with a known native goal command, Second Opinion includes that target's `/goal ...` command in the subagent prompt:
 
 ```bash
 second-opinion ask claude --from codex --cwd "$PWD" --mode work --background --goal "Finish the frontend accessibility pass and report blockers." -- "Work toward this goal in the assigned UI files only."

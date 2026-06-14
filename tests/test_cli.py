@@ -44,6 +44,7 @@ class RegistryTests(unittest.TestCase):
             self.assertIn("quality depends heavily on the selected model", skill)
             self.assertIn("Optional Goal Mode", skill)
             self.assertIn("Do not use goal mode by default", skill)
+            self.assertIn("known native goal command", skill)
             self.assertIn("second-opinion ask auto", skill)
             self.assertIn("--goal", skill)
             self.assertNotIn(f"second-opinion ask {agent.key} --from {agent.key}", skill)
@@ -119,7 +120,7 @@ class CliCommandTests(unittest.TestCase):
             result = self.run_cli("status", "--json", home=Path(temp))
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
-            self.assertEqual(payload["version"], "1.3.3")
+            self.assertEqual(payload["version"], "1.3.4")
             self.assertIn("codex", payload["agents"])
             self.assertIn("antigravity", payload["agents"])
 
@@ -168,6 +169,19 @@ class CliCommandTests(unittest.TestCase):
         self.assertEqual(goal_result.returncode, 0, goal_result.stderr)
         self.assertIn("Opt-in goal mode requested", goal_result.stdout)
         self.assertIn("Goal: Finish the migration tests.", goal_result.stdout)
+        self.assertIn("Native goal command: `/goal Finish the migration tests.`", goal_result.stdout)
+
+        opencode_goal = self.run_cli(
+            "ask",
+            "opencode",
+            "--goal",
+            "Explore configured models.",
+            "--dry-run",
+            "--",
+            "review this",
+        )
+        self.assertEqual(opencode_goal.returncode, 0, opencode_goal.stderr)
+        self.assertIn("No native `/goal` command is configured", opencode_goal.stdout)
 
     def test_antigravity_dry_run_uses_sandbox_and_print_timeout(self):
         result = self.run_cli("ask", "antigravity", "--dry-run", "--", "review this")
@@ -198,7 +212,7 @@ class CliCommandTests(unittest.TestCase):
         self.assertIn("Deprecated and ignored", source)
         self.assertNotIn("TimeoutExpired", source)
         self.assertNotIn("subprocess.TimeoutExpired", source)
-        self.assertEqual(module.VERSION, "1.3.3")
+        self.assertEqual(module.VERSION, "1.3.4")
 
     def test_update_replaces_cli_from_base_url(self):
         with tempfile.TemporaryDirectory() as temp:
