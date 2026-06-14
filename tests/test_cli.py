@@ -37,6 +37,8 @@ class RegistryTests(unittest.TestCase):
             self.assertIn("second-opinion ask auto", skill)
             self.assertIn("--background", skill)
             self.assertIn("second-opinion wait JOB_ID", skill)
+            self.assertIn("model agnostic", skill)
+            self.assertIn("Prefer capability fit over model branding", skill)
             self.assertNotIn(f"second-opinion ask {agent.key} --from {agent.key}", skill)
             for key in module.AGENTS:
                 self.assertIn(f"`{key}`", skill)
@@ -87,7 +89,7 @@ class CliCommandTests(unittest.TestCase):
             result = self.run_cli("status", "--json", home=Path(temp))
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
-            self.assertEqual(payload["version"], "1.2.0")
+            self.assertEqual(payload["version"], "1.3.0")
             self.assertIn("codex", payload["agents"])
             self.assertIn("antigravity", payload["agents"])
 
@@ -108,8 +110,16 @@ class CliCommandTests(unittest.TestCase):
     def test_claude_dry_run_uses_normal_auth_mode(self):
         result = self.run_cli("ask", "claude", "--dry-run", "--", "review this")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("claude -p --permission-mode plan", result.stdout)
-        self.assertNotIn("--bare", result.stdout)
+        self.assertIn("freedomclaude --idle-ms 8000 --timeout-ms 7200000", result.stdout)
+        self.assertIn("-- --permission-mode plan", result.stdout)
+        self.assertNotIn("claude -p", result.stdout)
+        self.assertNotIn("--print", result.stdout)
+
+    def test_claude_model_override_is_passed_through_freedomclaude(self):
+        result = self.run_cli("ask", "claude", "--model", "fable", "--dry-run", "--", "review this")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("freedomclaude", result.stdout)
+        self.assertIn("-- --permission-mode plan --model fable", result.stdout)
 
     def test_antigravity_dry_run_uses_sandbox_and_no_print_timeout(self):
         result = self.run_cli("ask", "antigravity", "--dry-run", "--", "review this")
@@ -130,8 +140,44 @@ class CliCommandTests(unittest.TestCase):
         source = CLI.read_text(encoding="utf-8")
         self.assertIn("Deprecated and ignored", source)
         self.assertNotIn("TimeoutExpired", source)
-        self.assertNotIn("timeout=", source)
-        self.assertEqual(module.VERSION, "1.2.0")
+        self.assertNotIn("subprocess.TimeoutExpired", source)
+        self.assertEqual(module.VERSION, "1.3.0")
+
+    def test_update_replaces_cli_from_base_url(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            site_bin = root / "site/bin"
+            site_bin.mkdir(parents=True)
+            remote_cli = site_bin / "second-opinion"
+            remote_cli.write_text(
+                "#!/usr/bin/env python3\n"
+                '"""Second Opinion CLI."""\n'
+                'VERSION = "9.9.9"\n'
+                "print('updated second opinion')\n",
+                encoding="utf-8",
+            )
+            target = root / "installed-second-opinion"
+            target.write_text(
+                "#!/usr/bin/env python3\n"
+                '"""Second Opinion CLI."""\n'
+                'VERSION = "0.1.0"\n',
+                encoding="utf-8",
+            )
+            target.chmod(0o755)
+
+            result = self.run_cli(
+                "update",
+                "--base-url",
+                (root / "site").as_uri(),
+                "--path",
+                str(target),
+                "--skip-freedomclaude",
+                "--skip-skills",
+                home=root / "home",
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("Updated Second Opinion CLI to 9.9.9", result.stdout)
+            self.assertIn('VERSION = "9.9.9"', target.read_text(encoding="utf-8"))
 
     def test_background_job_writes_log_and_metadata(self):
         module = load_cli_module()

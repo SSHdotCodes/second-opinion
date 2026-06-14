@@ -25,6 +25,7 @@ SECOND_OPINION_HOME="$(mktemp -d)" bin/second-opinion install --all --yes
 - Use the target agent's local authentication and CLI.
 - Keep `consult` read-only by prompt and by the safest available CLI flags.
 - Keep `work` opt-in and scoped.
+- Keep routing model agnostic. Add agent capability hints, not hardcoded default model requirements, unless the target CLI itself requires them.
 
 ## Skill Content
 

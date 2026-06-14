@@ -6,7 +6,7 @@
     <title>Second Opinion</title>
     <meta
       name="description"
-      content="Second Opinion lets Codex, Claude Code, OpenCode, and Grok Build use each other as opt-in coding subagents."
+      content="Second Opinion is a model-agnostic CLI that lets Codex, Claude Code, OpenCode, Grok Build, and Google Antigravity use each other as opt-in coding subagents."
     />
     <style>
       :root {
@@ -363,8 +363,8 @@
         <div>
           <h1>Second Opinion</h1>
           <p class="lead">
-            Mix Codex, Claude Code, OpenCode, Grok Build, and Google Antigravity as opt-in subagents.
-            Each agent keeps its own CLI, account, model access, and safety settings.
+            Mix Codex, Claude Code, OpenCode, Grok Build, and Google Antigravity as model-agnostic opt-in subagents.
+            Each agent keeps its own CLI, account, model access, provider setup, and safety settings. Claude Code runs through FreedomClaude terminal mode instead of <code>claude -p</code>.
           </p>
           <div class="actions">
             <a class="button" href="install.sh">Download installer</a>
@@ -379,7 +379,9 @@
           <pre>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash
 
 second-opinion ask auto --from claude --cwd "$PWD" --mode consult --background -- "Review this patch."
-second-opinion wait JOB_ID</pre>
+second-opinion wait JOB_ID
+
+second-opinion update</pre>
         </div>
       </div>
     </header>
@@ -390,7 +392,7 @@ second-opinion wait JOB_ID</pre>
           <div class="section-head">
             <div>
               <h2>Agent Matrix</h2>
-              <p>Second Opinion installs native skills that teach each agent how to start another installed agent in the background for a scoped task.</p>
+              <p>Second Opinion installs native skills that teach each agent how to decide when another chat is useful, then start the best-fit installed agent in the background for a scoped task.</p>
             </div>
           </div>
           <div class="grid">
@@ -402,7 +404,7 @@ second-opinion wait JOB_ID</pre>
             <article class="agent">
               <span class="tag">Claude Code</span>
               <h3>Architecture and review</h3>
-              <p>Useful for design review, edge cases, refactors, and reasoning-heavy analysis.</p>
+              <p>Useful for design review, edge cases, refactors, and reasoning-heavy analysis. Runs through FreedomClaude, so model aliases and full model names pass through to normal Claude Code.</p>
             </article>
             <article class="agent">
               <span class="tag">OpenCode</span>
@@ -428,11 +430,13 @@ second-opinion wait JOB_ID</pre>
           <div class="section-head">
             <div>
               <h2>Copy-Paste Commands</h2>
-              <p>Use the main installer for an interactive setup, or pass flags for a specific agent or remote SSH install.</p>
+              <p>Use the main installer for an interactive setup, pass flags for a specific agent or remote SSH install, and run the updater when a newer version is published.</p>
             </div>
           </div>
           <div class="commands">
             <div class="command"><strong>Main CLI</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash</code></div>
+            <div class="command"><strong>Update</strong><code>second-opinion update</code></div>
+            <div class="command"><strong>Skip FreedomClaude</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --skip-freedomclaude</code></div>
             <div class="command"><strong>Detected agents</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --yes</code></div>
             <div class="command"><strong>All agents</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --all --yes</code></div>
             <div class="command"><strong>Codex only</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --agent codex --yes</code></div>
@@ -466,7 +470,7 @@ second-opinion wait JOB_ID</pre>
 
     <footer>
       <div class="wrap">
-        Open source under MIT. No API keys, provider credentials, hooks, MCP servers, or model settings are modified.
+        Open source under MIT. No API keys, provider credentials, hooks, MCP servers, or model settings are modified. Claude Code delegation uses FreedomClaude terminal mode.
       </div>
     </footer>
   </body>

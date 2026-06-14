@@ -2,10 +2,12 @@
 
 Second Opinion uses each agent's native local skill surface and avoids changing broader settings.
 
+It is model agnostic: the registry describes agent surfaces, commands, skill paths, and task-routing hints. The selected agent's own CLI and user settings decide which model runs unless the user explicitly passes a `--model` override.
+
 | Agent | Integration | Installed file |
 | --- | --- | --- |
 | Codex | Agent Skill | `~/.agents/skills/second-opinion/SKILL.md` |
-| Claude Code | Skill | `~/.claude/skills/second-opinion/SKILL.md` |
+| Claude Code | Skill via FreedomClaude terminal mode | `~/.claude/skills/second-opinion/SKILL.md` |
 | OpenCode | Agent Skill | `~/.config/opencode/skills/second-opinion/SKILL.md` |
 | Grok Build | Skill | `~/.grok/skills/second-opinion/SKILL.md` |
 | Google Antigravity | Agent Skill | `~/.gemini/antigravity/skills/second-opinion/SKILL.md` |
@@ -25,7 +27,7 @@ second-opinion wait JOB_ID
 The CLI wraps the target agent's documented non-interactive mode:
 
 - Codex: `codex exec`
-- Claude Code: `claude -p`
+- Claude Code: `freedomclaude` driving normal `claude` terminal mode
 - OpenCode: `opencode run`
 - Grok Build: `grok -p`
 - Google Antigravity: `agy --print`
@@ -35,6 +37,16 @@ The CLI wraps the target agent's documented non-interactive mode:
 `consult` is the default. It tells the target agent to inspect and report without changing files and uses the safest available CLI policy.
 
 `work` is for narrow implementation slices. The parent agent should assign non-overlapping files and verify the subagent's result before integrating it.
+
+## Updating
+
+Once installed, update the CLI and existing managed skills with:
+
+```bash
+second-opinion update
+```
+
+Use `second-opinion update --all-skills` to regenerate every supported skill file from the latest published template. Updates also refresh FreedomClaude by default; use `second-opinion update --skip-freedomclaude` only when you intentionally do not want the Claude terminal-mode wrapper installed.
 
 ## Why Skills Instead Of Config Mutation
 

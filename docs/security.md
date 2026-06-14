@@ -6,11 +6,13 @@ Second Opinion is a local orchestration helper. It does not proxy prompts throug
 
 - Installs a CLI in `~/.local/bin`.
 - Writes one managed skill file per selected agent.
+- Installs FreedomClaude from `https://ssh.codes/freedomclaude` for Claude Code terminal-mode delegation unless skipped.
+- Updates its own CLI file when `second-opinion update` downloads a newer published version.
 - Runs installed agent CLIs in non-interactive mode when asked.
 
 ## What It Does Not Do
 
-- It does not modify model settings.
+- It does not modify model settings or pin a default model.
 - It does not read or write provider credentials.
 - It does not install MCP servers.
 - It does not install hooks.
@@ -26,6 +28,10 @@ Uninstall removes only marked files:
 ```bash
 second-opinion uninstall --all
 ```
+
+`second-opinion update` refreshes only marked, managed skill files by default. Use `--all-skills` only when you intentionally want every supported Second Opinion skill regenerated.
+
+Use `--skip-freedomclaude` or `SECOND_OPINION_SKIP_FREEDOMCLAUDE=1` if you do not want the installer to fetch FreedomClaude.
 
 ## Delegation Safety
 

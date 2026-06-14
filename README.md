@@ -4,6 +4,10 @@ Second Opinion lets installed AI coding agents use each other as opt-in subagent
 
 If you are in Claude Code and want Codex to review a risky patch, Claude can run Second Opinion and delegate that slice to Codex. If you are in Codex, the same install gives Codex a skill for delegating to Claude Code, OpenCode, Grok Build, or Google Antigravity. Each agent keeps its own auth, model access, tools, and safety behavior.
 
+Second Opinion is model agnostic. It routes between installed agent surfaces and the user's existing model/provider setup instead of hardcoding one model. The generated skills teach each parent agent to reason about when another chat is useful, which agent's strongest capabilities fit the scenario, and when a same-agent fresh-context pass is the only sensible option.
+
+For Claude Code, Second Opinion installs and uses [FreedomClaude](https://ssh.codes/freedomclaude) behind the scenes. That means Claude delegation goes through normal Claude Code terminal mode instead of `claude -p` / print mode, while still allowing model aliases or full model names to pass through to Claude Code with `--model`.
+
 ## Install
 
 Interactive CLI installer:
@@ -40,9 +44,19 @@ Install on another machine over SSH:
 ssh dev@server 'curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --all --yes'
 ```
 
+Update an existing install when a newer version is published:
+
+```bash
+second-opinion update
+```
+
+`second-opinion update` downloads the latest CLI from `https://second-opinion.ssh.codes`, replaces the local binary only when the published version is newer, and refreshes existing Second Opinion-managed skill files. Use `second-opinion update --all-skills` to refresh every supported skill file or `second-opinion update --force` to reinstall the published version anyway.
+
+New installs and updates also install or refresh FreedomClaude for Claude Code delegation. Set `SECOND_OPINION_SKIP_FREEDOMCLAUDE=1` or pass `--skip-freedomclaude` to the installer if you only want the core Second Opinion CLI.
+
 ## What Gets Installed
 
-The installer adds the `second-opinion` CLI to `~/.local/bin` and writes only Second Opinion-owned skill files:
+The installer adds the `second-opinion` CLI to `~/.local/bin`, installs FreedomClaude for Claude Code delegation, and writes only Second Opinion-owned skill files:
 
 | Agent | File written |
 | --- | --- |
@@ -62,6 +76,7 @@ From any shell:
 second-opinion status
 second-opinion ask auto --from codex --cwd "$PWD" --mode consult --background -- "Review this change and call out risks."
 second-opinion ask claude --from opencode --cwd "$PWD" --mode consult --background -- "Find edge cases in the parser."
+second-opinion ask claude --from codex --cwd "$PWD" --model fable --mode consult --background -- "Review this design using Claude Code's selected model."
 second-opinion ask grok --from claude --cwd "$PWD" --mode work --background -- "Implement only the README command table."
 second-opinion jobs
 second-opinion wait JOB_ID
@@ -87,6 +102,7 @@ The CLI has a central registry for agent commands, skill paths, and task-routing
 second-opinion install              # interactive when attached to a terminal
 second-opinion install --yes         # install detected agent skills
 second-opinion install --all --yes   # install all supported skills
+second-opinion update                # update the CLI and managed skills when newer
 second-opinion uninstall --agent codex
 second-opinion status --json
 second-opinion choose --from claude --task "review auth flow"
@@ -104,6 +120,7 @@ Second Opinion is intentionally small:
 - No server is required.
 - No API keys are handled by Second Opinion.
 - Each target agent runs through its own installed CLI.
+- Claude Code runs through FreedomClaude terminal mode, not `claude -p`.
 - All agent instructions are regular skill files that users can inspect.
 - The subagent prompt includes anti-recursion and scope-isolation rules.
 
