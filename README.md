@@ -77,14 +77,14 @@ second-opinion status
 second-opinion ask auto --from codex --cwd "$PWD" --mode consult --background -- "Review this change and call out risks."
 second-opinion ask claude --from opencode --cwd "$PWD" --mode consult --background -- "Find edge cases in the parser."
 second-opinion ask claude --from codex --cwd "$PWD" --model fable --mode consult --background -- "Review this design using Claude Code's selected model."
-second-opinion ask grok --from claude --cwd "$PWD" --mode work --background -- "Implement only the README command table."
+second-opinion ask grok --from claude --cwd "$PWD" --background -- "Implement only the README command table."
 second-opinion jobs
 second-opinion wait JOB_ID
 ```
 
 The installed skills teach each agent to start subagents in the background by default. That lets the parent agent continue its own non-overlapping work while the subagent runs. Later, the parent runs `second-opinion wait JOB_ID` to collect the subagent output.
 
-Use `consult` mode by default. Consult mode asks the target agent to inspect and report without editing files. `work` mode is available for narrow implementation slices, but should be assigned carefully so two agents do not edit the same files at the same time.
+Use `work` mode by default. Work mode may edit files and should be assigned carefully so two agents do not edit the same files at the same time. Use explicit `--mode consult` for read-only review, planning, or risk analysis.
 
 ## Goal Mode
 

@@ -120,7 +120,7 @@ class CliCommandTests(unittest.TestCase):
             result = self.run_cli("status", "--json", home=Path(temp))
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
-            self.assertEqual(payload["version"], "1.3.4")
+            self.assertEqual(payload["version"], "1.3.5")
             self.assertIn("codex", payload["agents"])
             self.assertIn("antigravity", payload["agents"])
 
@@ -135,14 +135,23 @@ class CliCommandTests(unittest.TestCase):
         result = self.run_cli("ask", "codex", "--dry-run", "--", "review this")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("codex exec", result.stdout)
-        self.assertIn("--sandbox read-only", result.stdout)
+        self.assertIn("--sandbox workspace-write", result.stdout)
         self.assertNotIn("--ask-for-approval", result.stdout)
+
+    def test_consult_mode_uses_read_only_policies(self):
+        result = self.run_cli("ask", "codex", "--mode", "consult", "--dry-run", "--", "review this")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("--sandbox read-only", result.stdout)
+
+        claude_result = self.run_cli("ask", "claude", "--mode", "consult", "--dry-run", "--", "review this")
+        self.assertEqual(claude_result.returncode, 0, claude_result.stderr)
+        self.assertIn("-- --permission-mode plan", claude_result.stdout)
 
     def test_claude_dry_run_uses_normal_auth_mode(self):
         result = self.run_cli("ask", "claude", "--dry-run", "--", "review this")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("freedomclaude --idle-ms 8000 --timeout-ms 7200000", result.stdout)
-        self.assertIn("-- --permission-mode plan", result.stdout)
+        self.assertIn("-- --permission-mode auto", result.stdout)
         self.assertNotIn("claude -p", result.stdout)
         self.assertNotIn("--print", result.stdout)
 
@@ -150,7 +159,17 @@ class CliCommandTests(unittest.TestCase):
         result = self.run_cli("ask", "claude", "--model", "fable", "--dry-run", "--", "review this")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("freedomclaude", result.stdout)
-        self.assertIn("-- --permission-mode plan --model fable", result.stdout)
+        self.assertIn("-- --permission-mode auto --model fable", result.stdout)
+
+    def test_claude_dotted_model_ids_are_normalized(self):
+        result = self.run_cli("ask", "claude", "--model", "claude-opus-4.8", "--dry-run", "--", "review this")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("--model claude-opus-4-8", result.stdout)
+        self.assertNotIn("--model claude-opus-4.8", result.stdout)
+
+        opencode_result = self.run_cli("ask", "opencode", "--model", "openrouter/anthropic/claude-opus-4.8", "--dry-run", "--", "review this")
+        self.assertEqual(opencode_result.returncode, 0, opencode_result.stderr)
+        self.assertIn("--model openrouter/anthropic/claude-opus-4.8", opencode_result.stdout)
 
     def test_goal_prompt_is_opt_in(self):
         result = self.run_cli("ask", "claude", "--dry-run", "--", "review this")
@@ -184,7 +203,7 @@ class CliCommandTests(unittest.TestCase):
         self.assertIn("No native `/goal` command is configured", opencode_goal.stdout)
 
     def test_antigravity_dry_run_uses_sandbox_and_print_timeout(self):
-        result = self.run_cli("ask", "antigravity", "--dry-run", "--", "review this")
+        result = self.run_cli("ask", "antigravity", "--mode", "consult", "--dry-run", "--", "review this")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("agy --print", result.stdout)
         self.assertIn("--sandbox --print-timeout 5m0s", result.stdout)
@@ -212,7 +231,7 @@ class CliCommandTests(unittest.TestCase):
         self.assertIn("Deprecated and ignored", source)
         self.assertNotIn("TimeoutExpired", source)
         self.assertNotIn("subprocess.TimeoutExpired", source)
-        self.assertEqual(module.VERSION, "1.3.4")
+        self.assertEqual(module.VERSION, "1.3.5")
 
     def test_update_replaces_cli_from_base_url(self):
         with tempfile.TemporaryDirectory() as temp:

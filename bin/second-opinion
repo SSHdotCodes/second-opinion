@@ -25,7 +25,7 @@ from textwrap import dedent
 from typing import Iterable
 
 
-VERSION = "1.3.4"
+VERSION = "1.3.5"
 DEFAULT_BASE_URL = "https://second-opinion.ssh.codes"
 DEFAULT_FREEDOMCLAUDE_BASE_URL = "https://ssh.codes/freedomclaude"
 SKILL_NAME = "second-opinion"
@@ -378,7 +378,7 @@ def render_skill(agent: Agent) -> str:
         1. Run `second-opinion status --json` to see which agent CLIs and skill files are available.
         2. Think through whether a second perspective is useful: architecture uncertainty, risky patches, security review, broad exploration, provider/model-specific behavior, or a narrow implementation slice. If it is not useful, continue directly.
         3. Choose a target that is not `{agent.key}` unless the user explicitly asks for a same-agent fresh-context pass or no other agent is available.
-        4. Start subagents in the background so you and the subagent can work at the same time. Prefer consult mode first. It asks the subagent to inspect, reason, and report without editing files:
+        4. Start subagents in the background so you and the subagent can work at the same time. The CLI default mode is `work`, which may edit files. Use explicit `--mode consult` for read-only review, planning, or risk analysis:
 
            ```bash
            second-opinion ask auto --from {agent.key} --cwd "$PWD" --mode consult --background -- "Review the current approach and call out risks."
@@ -393,10 +393,10 @@ def render_skill(agent: Agent) -> str:
            second-opinion wait JOB_ID
            ```
 
-        7. Use work mode only when the user expects another agent to edit files. Assign a narrow, non-overlapping slice:
+        7. Work mode is the default. Use it for narrow implementation slices, and assign non-overlapping files:
 
            ```bash
-           second-opinion ask {example_work_target(agent)} --from {agent.key} --cwd "$PWD" --mode work --background -- "Implement the parser tests only. Do not touch the API layer."
+           second-opinion ask {example_work_target(agent)} --from {agent.key} --cwd "$PWD" --background -- "Implement the parser tests only. Do not touch the API layer."
            ```
 
         8. Do not wait immediately unless the subagent's answer blocks your next step. When you do collect the result, inspect its output, verify any file changes, and integrate it deliberately.
@@ -640,8 +640,17 @@ def build_prompt(
     return "\n".join(lines)
 
 
+def normalize_model_for_agent(agent: Agent, model: str | None) -> str | None:
+    if not model:
+        return None
+    if agent.key == "claude":
+        return re.sub(r"(?<=\d)\.(?=\d)", "-", model)
+    return model
+
+
 def command_for_agent(agent: Agent, *, cwd: Path, mode: str, prompt: str, model: str | None, trust: bool) -> list[str]:
     exe = shutil.which(agent.command) or agent.command
+    model = normalize_model_for_agent(agent, model)
     if agent.key == "codex":
         args = list(agent.work_args if mode == "work" else agent.consult_args)
         cmd = [exe, *args, "--cd", str(cwd)]
@@ -1079,7 +1088,7 @@ def build_parser() -> argparse.ArgumentParser:
     ask.add_argument("target", nargs="?", help="Target agent: auto, codex, claude, opencode, grok, or antigravity.", default="auto")
     ask.add_argument("--from", dest="caller", help="Calling agent name.")
     ask.add_argument("--cwd", default=".", help="Workspace directory for the subagent.")
-    ask.add_argument("--mode", choices=("consult", "work"), default="consult", help="consult is read-only by prompt/policy; work may edit.")
+    ask.add_argument("--mode", choices=("consult", "work"), default="work", help="work is the default and may edit; consult is read-only by prompt/policy.")
     ask.add_argument("--model", help="Pass a model override to the target CLI when supported.")
     ask.add_argument("--timeout", type=int, help="Deprecated and ignored. Subagents run without a timeout.")
     ask.add_argument("--task", help="Task text.")

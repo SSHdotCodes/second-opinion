@@ -42,9 +42,9 @@ The CLI wraps the target agent's documented non-interactive mode:
 
 ## Modes
 
-`consult` is the default. It tells the target agent to inspect and report without changing files and uses the safest available CLI policy.
+`work` is the default. It is for narrow implementation slices and may edit files, so the parent agent should assign non-overlapping files and verify the subagent's result before integrating it.
 
-`work` is for narrow implementation slices. The parent agent should assign non-overlapping files and verify the subagent's result before integrating it.
+`consult` is available with `--mode consult`. It tells the target agent to inspect and report without changing files and uses the safest available CLI policy.
 
 ## Goal Mode
 

@@ -35,6 +35,6 @@ Use `--skip-freedomclaude` or `SECOND_OPINION_SKIP_FREEDOMCLAUDE=1` if you do no
 
 ## Delegation Safety
 
-Use `consult` mode by default. Use `work` mode only when the user intentionally wants another agent to edit a narrow slice of the workspace.
+`work` mode is the CLI default and may edit files. Use explicit `--mode consult` when the user wants a read-only review, plan, or risk analysis.
 
 The generated skill tells parent agents not to pass secrets and not to create recursive delegation chains unless explicitly requested.
