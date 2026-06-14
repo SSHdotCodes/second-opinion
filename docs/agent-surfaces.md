@@ -32,6 +32,14 @@ The CLI wraps the target agent's documented non-interactive mode:
 - Grok Build: `grok -p`
 - Google Antigravity: `agy --print`
 
+## Routing Tips
+
+- Claude Code is the best first stop for visual UI, frontend polish, responsive layout, copy tone, and product/design judgment. Use the latest/highest Claude model available to the user, often an Opus-class model when available.
+- Codex is the best first stop for backend work, APIs, data flow, tests, repo-wide edits, debugging, and most general implementation tasks.
+- OpenCode is fast and easy for model-flexible exploration across configured providers, but quality depends heavily on the selected model.
+- Antigravity is best when Google/Gemini, Vertex, Firebase, Cloud Run, or Google-style orchestration matters.
+- Grok Build is useful for broad exploration or implementation spikes when installed.
+
 ## Modes
 
 `consult` is the default. It tells the target agent to inspect and report without changing files and uses the safest available CLI policy.

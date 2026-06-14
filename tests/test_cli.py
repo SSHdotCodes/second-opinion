@@ -39,9 +39,35 @@ class RegistryTests(unittest.TestCase):
             self.assertIn("second-opinion wait JOB_ID", skill)
             self.assertIn("model agnostic", skill)
             self.assertIn("Prefer capability fit over model branding", skill)
+            self.assertIn("Practical routing tips", skill)
+            self.assertIn("visual UI, frontend polish", skill)
+            self.assertIn("quality depends heavily on the selected model", skill)
             self.assertNotIn(f"second-opinion ask {agent.key} --from {agent.key}", skill)
             for key in module.AGENTS:
                 self.assertIn(f"`{key}`", skill)
+
+    def test_auto_routing_prefers_expected_surfaces(self):
+        module = load_cli_module()
+        previous_detect_agents = module.detect_agents
+        module.detect_agents = lambda: {
+            key: {"detected": True}
+            for key in module.AGENTS
+        }
+        try:
+            self.assertEqual(
+                module.choose_target("codex", "polish the responsive frontend layout").key,
+                "claude",
+            )
+            self.assertEqual(
+                module.choose_target("claude", "fix the backend API auth endpoint tests").key,
+                "codex",
+            )
+            self.assertEqual(
+                module.choose_target("codex", "try configured OpenRouter models quickly").key,
+                "opencode",
+            )
+        finally:
+            module.detect_agents = previous_detect_agents
 
     def test_managed_write_skips_unmanaged_existing_files(self):
         module = load_cli_module()
@@ -89,7 +115,7 @@ class CliCommandTests(unittest.TestCase):
             result = self.run_cli("status", "--json", home=Path(temp))
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
-            self.assertEqual(payload["version"], "1.3.1")
+            self.assertEqual(payload["version"], "1.3.2")
             self.assertIn("codex", payload["agents"])
             self.assertIn("antigravity", payload["agents"])
 
@@ -150,7 +176,7 @@ class CliCommandTests(unittest.TestCase):
         self.assertIn("Deprecated and ignored", source)
         self.assertNotIn("TimeoutExpired", source)
         self.assertNotIn("subprocess.TimeoutExpired", source)
-        self.assertEqual(module.VERSION, "1.3.1")
+        self.assertEqual(module.VERSION, "1.3.2")
 
     def test_update_replaces_cli_from_base_url(self):
         with tempfile.TemporaryDirectory() as temp:

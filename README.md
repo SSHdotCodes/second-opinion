@@ -86,6 +86,14 @@ The installed skills teach each agent to start subagents in the background by de
 
 Use `consult` mode by default. Consult mode asks the target agent to inspect and report without editing files. `work` mode is available for narrow implementation slices, but should be assigned carefully so two agents do not edit the same files at the same time.
 
+## Routing Tips
+
+- For visual UI, frontend polish, responsive layout, copy tone, and product/design judgment, prefer Claude Code with the latest/highest Claude model available to you, often an Opus-class model when available.
+- For backend work, APIs, data flow, tests, repo-wide edits, debugging, and most general implementation tasks, prefer Codex unless another target has clearly better context or provider access.
+- For quick model-flexible exploration, cheap parallel checks, or trying many configured providers, OpenCode is fast and easy to use; output quality depends heavily on the selected model, so verify smaller or cheaper model results more carefully.
+- Use Antigravity for Google/Gemini, Vertex, Firebase, Cloud Run, or Google-style orchestration.
+- Use Grok Build for broad exploration or implementation spikes when it is installed and speed matters more than precision.
+
 ## Supported Agents
 
 - Codex
