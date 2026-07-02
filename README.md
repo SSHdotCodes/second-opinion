@@ -6,7 +6,7 @@ If you are in Claude Code and want Codex to review a risky patch, Claude can run
 
 Second Opinion is model agnostic. It routes between installed agent surfaces and the user's existing model/provider setup instead of hardcoding one model. The generated skills teach each parent agent to reason about when another chat is useful, which agent's strongest capabilities fit the scenario, and when a same-agent fresh-context pass is the only sensible option.
 
-For Claude Code, Second Opinion installs and uses [FreedomClaude](https://ssh.codes/freedomclaude) behind the scenes. That means Claude delegation goes through normal Claude Code terminal mode instead of `claude -p` / print mode, while still allowing model aliases or full model names to pass through to Claude Code with `--model`.
+For Claude Code, Second Opinion uses the official Claude Code CLI print mode (`claude -p`) and passes model aliases or full model names through with `--model`.
 
 ## Install
 
@@ -52,11 +52,9 @@ second-opinion update
 
 `second-opinion update` downloads the latest CLI from `https://second-opinion.ssh.codes`, replaces the local binary only when the published version is newer, and refreshes existing Second Opinion-managed skill files. Use `second-opinion update --all-skills` to refresh every supported skill file or `second-opinion update --force` to reinstall the published version anyway.
 
-New installs and updates also install or refresh FreedomClaude for Claude Code delegation. Set `SECOND_OPINION_SKIP_FREEDOMCLAUDE=1` or pass `--skip-freedomclaude` to the installer if you only want the core Second Opinion CLI.
-
 ## What Gets Installed
 
-The installer adds the `second-opinion` CLI to `~/.local/bin`, installs FreedomClaude for Claude Code delegation, and writes only Second Opinion-owned skill files:
+The installer adds the `second-opinion` CLI to `~/.local/bin` and writes only Second Opinion-owned skill files:
 
 | Agent | File written |
 | --- | --- |
@@ -141,7 +139,7 @@ Second Opinion is intentionally small:
 - No server is required.
 - No API keys are handled by Second Opinion.
 - Each target agent runs through its own installed CLI.
-- Claude Code runs through FreedomClaude terminal mode, not `claude -p`.
+- Claude Code runs through the official `claude -p` print mode.
 - All agent instructions are regular skill files that users can inspect.
 - The subagent prompt includes anti-recursion and scope-isolation rules.
 

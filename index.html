@@ -364,7 +364,7 @@
           <h1>Second Opinion</h1>
           <p class="lead">
             Mix Codex, Claude Code, OpenCode, Grok Build, and Google Antigravity as model-agnostic opt-in subagents.
-            Each agent keeps its own CLI, account, model access, provider setup, and safety settings. Claude Code runs through FreedomClaude terminal mode instead of <code>claude -p</code>.
+            Each agent keeps its own CLI, account, model access, provider setup, and safety settings. Claude Code runs through the official <code>claude -p</code> print mode.
           </p>
           <div class="actions">
             <a class="button" href="install.sh">Download installer</a>
@@ -436,7 +436,6 @@ second-opinion update</pre>
           <div class="commands">
             <div class="command"><strong>Main CLI</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash</code></div>
             <div class="command"><strong>Update</strong><code>second-opinion update</code></div>
-            <div class="command"><strong>Skip FreedomClaude</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --skip-freedomclaude</code></div>
             <div class="command"><strong>Goal mode</strong><code>second-opinion ask auto --background --goal "Finish the assigned migration tests." -- "Work toward this bounded goal only."</code></div>
             <div class="command"><strong>Detected agents</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --yes</code></div>
             <div class="command"><strong>All agents</strong><code>curl -fsSL https://second-opinion.ssh.codes/install.sh | bash -s -- --all --yes</code></div>
@@ -471,7 +470,7 @@ second-opinion update</pre>
 
     <footer>
       <div class="wrap">
-        Open source under MIT. No API keys, provider credentials, hooks, MCP servers, or model settings are modified. Claude Code delegation uses FreedomClaude terminal mode.
+        Open source under MIT. No API keys, provider credentials, hooks, MCP servers, or model settings are modified. Claude Code delegation uses <code>claude -p</code> print mode.
       </div>
     </footer>
   </body>
