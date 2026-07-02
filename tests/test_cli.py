@@ -145,21 +145,20 @@ class CliCommandTests(unittest.TestCase):
 
         claude_result = self.run_cli("ask", "claude", "--mode", "consult", "--dry-run", "--", "review this")
         self.assertEqual(claude_result.returncode, 0, claude_result.stderr)
-        self.assertIn("-- --permission-mode plan", claude_result.stdout)
+        self.assertIn("claude -p --permission-mode plan", claude_result.stdout)
 
-    def test_claude_dry_run_uses_normal_auth_mode(self):
+    def test_claude_dry_run_uses_print_mode(self):
         result = self.run_cli("ask", "claude", "--dry-run", "--", "review this")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("freedomclaude --idle-ms 8000 --timeout-ms 7200000", result.stdout)
-        self.assertIn("-- --permission-mode auto", result.stdout)
-        self.assertNotIn("claude -p", result.stdout)
-        self.assertNotIn("--print", result.stdout)
+        self.assertIn("claude -p --permission-mode auto", result.stdout)
+        self.assertNotIn("--idle-ms", result.stdout)
+        self.assertNotIn("--timeout-ms", result.stdout)
 
-    def test_claude_model_override_is_passed_through_freedomclaude(self):
+    def test_claude_model_override_is_passed_through_to_claude(self):
         result = self.run_cli("ask", "claude", "--model", "fable", "--dry-run", "--", "review this")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("freedomclaude", result.stdout)
-        self.assertIn("-- --permission-mode auto --model fable", result.stdout)
+        self.assertIn("claude -p", result.stdout)
+        self.assertIn("--permission-mode auto --model fable", result.stdout)
 
     def test_claude_dotted_model_ids_are_normalized(self):
         result = self.run_cli("ask", "claude", "--model", "claude-opus-4.8", "--dry-run", "--", "review this")
@@ -261,7 +260,6 @@ class CliCommandTests(unittest.TestCase):
                 (root / "site").as_uri(),
                 "--path",
                 str(target),
-                "--skip-freedomclaude",
                 "--skip-skills",
                 home=root / "home",
             )

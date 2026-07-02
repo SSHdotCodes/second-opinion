@@ -4,8 +4,6 @@ set -euo pipefail
 BASE_URL="${SECOND_OPINION_BASE_URL:-https://second-opinion.ssh.codes}"
 INSTALL_DIR="${SECOND_OPINION_BIN_DIR:-$HOME/.local/bin}"
 BIN_PATH="$INSTALL_DIR/second-opinion"
-FREEDOMCLAUDE_BASE_URL="${FREEDOMCLAUDE_BASE_URL:-https://ssh.codes/freedomclaude}"
-FREEDOMCLAUDE_BASE_URL="${FREEDOMCLAUDE_BASE_URL%/}"
 
 show_help() {
   cat <<'EOF'
@@ -18,13 +16,9 @@ Usage:
 Installer environment:
   SECOND_OPINION_BASE_URL   Override download host.
   SECOND_OPINION_BIN_DIR    Override CLI install directory. Defaults to ~/.local/bin.
-  FREEDOMCLAUDE_BASE_URL    Override FreedomClaude download host.
-  SECOND_OPINION_SKIP_FREEDOMCLAUDE=1
-                             Skip the bundled FreedomClaude install.
 
 All arguments are passed to: second-opinion install
 Use --cli-only to install the CLI without adding agent skills.
-Use --skip-freedomclaude to skip FreedomClaude.
 
 Already installed?
   second-opinion update
@@ -32,7 +26,6 @@ EOF
 }
 
 cli_only=false
-skip_freedomclaude="${SECOND_OPINION_SKIP_FREEDOMCLAUDE:-}"
 for arg in "$@"; do
   case "$arg" in
     -h|--help)
@@ -41,9 +34,6 @@ for arg in "$@"; do
       ;;
     --cli-only)
       cli_only=true
-      ;;
-    --skip-freedomclaude)
-      skip_freedomclaude=1
       ;;
   esac
 done
@@ -85,28 +75,9 @@ if [ "$cli_only" = true ]; then
   exit 0
 fi
 
-install_freedomclaude() {
-  if [ -n "$skip_freedomclaude" ]; then
-    return 0
-  fi
-
-  if ! command -v curl >/dev/null 2>&1; then
-    echo "Warning: curl is unavailable; skipping FreedomClaude install." >&2
-    return 0
-  fi
-
-  echo "Installing FreedomClaude for Claude Code terminal-mode delegation..."
-  if ! curl -fsSL "$FREEDOMCLAUDE_BASE_URL/install.sh" | sh; then
-    echo "Warning: FreedomClaude install failed. Claude delegation will need freedomclaude on PATH." >&2
-  fi
-}
-
-install_freedomclaude
-
 args=()
 for arg in "$@"; do
   [ "$arg" = "--cli-only" ] && continue
-  [ "$arg" = "--skip-freedomclaude" ] && continue
   args+=("$arg")
 done
 

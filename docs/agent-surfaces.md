@@ -7,7 +7,7 @@ It is model agnostic: the registry describes agent surfaces, commands, skill pat
 | Agent | Integration | Installed file |
 | --- | --- | --- |
 | Codex | Agent Skill | `~/.agents/skills/second-opinion/SKILL.md` |
-| Claude Code | Skill via FreedomClaude terminal mode | `~/.claude/skills/second-opinion/SKILL.md` |
+| Claude Code | Skill via `claude -p` print mode | `~/.claude/skills/second-opinion/SKILL.md` |
 | OpenCode | Agent Skill | `~/.config/opencode/skills/second-opinion/SKILL.md` |
 | Grok Build | Skill | `~/.grok/skills/second-opinion/SKILL.md` |
 | Google Antigravity | Agent Skill | `~/.gemini/antigravity/skills/second-opinion/SKILL.md` |
@@ -27,7 +27,7 @@ second-opinion wait JOB_ID
 The CLI wraps the target agent's documented non-interactive mode:
 
 - Codex: `codex exec`
-- Claude Code: `freedomclaude` driving normal `claude` terminal mode
+- Claude Code: `claude -p`
 - OpenCode: `opencode run`
 - Grok Build: `grok -p`
 - Google Antigravity: `agy --print`
@@ -66,7 +66,7 @@ Once installed, update the CLI and existing managed skills with:
 second-opinion update
 ```
 
-Use `second-opinion update --all-skills` to regenerate every supported skill file from the latest published template. Updates also refresh FreedomClaude by default; use `second-opinion update --skip-freedomclaude` only when you intentionally do not want the Claude terminal-mode wrapper installed.
+Use `second-opinion update --all-skills` to regenerate every supported skill file from the latest published template.
 
 ## Why Skills Instead Of Config Mutation
 
