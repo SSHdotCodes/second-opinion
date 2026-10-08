@@ -81,6 +81,7 @@ class ProcessLivenessTests(unittest.TestCase):
         module = load_cli_module()
         fake_os = mock.Mock(wraps=os)
         fake_os.name = "posix"
+        fake_os.kill = mock.Mock(return_value=None)
         with mock.patch.object(module, "os", fake_os):
             for error, expected in ((None, True), (ProcessLookupError(), False), (PermissionError(), True)):
                 with self.subTest(error=error):
